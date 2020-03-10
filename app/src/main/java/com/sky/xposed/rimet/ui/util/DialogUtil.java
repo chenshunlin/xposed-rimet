@@ -175,6 +175,40 @@ public class DialogUtil {
         builder.setNegativeButton("取消", null);
         builder.show();
     }
+    public static void showSaveDialog(Context context, String keyWord, final OnSearchListener listener) {
+
+        int top = DisplayUtil.dip2px(context, 20f);
+        int left = DisplayUtil.dip2px(context, 26f);
+
+        FrameLayout frameLayout = new FrameLayout(context);
+        frameLayout.setLayoutParams(LayoutUtil.newFrameLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        frameLayout.setPadding(left, top, left, 0);
+
+        int topPadding = DisplayUtil.dip2px(context, 10);
+        int leftPadding = DisplayUtil.dip2px(context, 4);
+        final EditText editText = new EditText(context);
+        editText.setPadding(leftPadding, topPadding, leftPadding, topPadding);
+        editText.setTextSize(15);
+        editText.setText(keyWord);
+        editText.setLayoutParams(LayoutUtil.newViewGroupParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        editText.setSingleLine(true);
+        editText.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(50)});
+        editText.setHint("请输入方案名");
+        ViewUtil.setInputType(editText, com.sky.xposed.common.Constant.InputType.TEXT);
+        frameLayout.addView(editText);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("保存方案");
+        builder.setView(frameLayout);
+        builder.setPositiveButton("保存", (dialog, which) -> {
+            // 返回文本的内容
+            listener.onSearch(editText.getText().toString());
+        });
+        builder.setNegativeButton("取消", null);
+        builder.show();
+    }
 
     public static void showAboutDialog(Context context) {
 

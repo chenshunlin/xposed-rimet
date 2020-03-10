@@ -1,3 +1,33 @@
 <resources>
     <string name="app_name">钉钉助手</string>
+    <string name="location_manager_title">位置管理</string>
+    <string name="wifi_manager_title">WIFI管理</string>
+    <string name="wifi_collection_title">WIFI采集</string>
+    <string name="wifi_collection_desc">当前WIFI信息</string>
+    <string name="wifi_status">状态:</string>
+    <string name="wifi_status_no_conn">未连接</string>
+    <string name="wifi_status_conn">已连接</string>
+    <string name="wifi_bssid">BSSID:</string>
+    <string name="wifi_ssid">SSID:</string>
+    <string name="text_empty">空</string>
+    <string name="wifi_mac">Mac:</string>
+    <string name="wifi_collection_list">当前WIFI列表</string>
+    <string name="basestation_manager_title">基站管理</string>
+    <string name="basestation_collection_title">基站采集</string>
+    <string name="tab_text_1">位置</string>
+    <string name="tab_text_2">WIFI</string>
+    <string name="save">保存</string>
+    <string name="search">搜索</string>
+    <string name="import_settings">导入设置</string>
+    <string name="export_settings">导出设置</string>
+    <string name="list_wifi">Wifi列表:</string>
+    <string name="connect_wifi">连接wifi:</string>
+    <string name="wifi_statu">Wifi状态:</string>
+    <string name="text_name">名称:</string>
+    <string name="del_item">删除记录</string>
+    <string name="text_address">地址:</string>
+    <string name="text_latitude">纬度:</string>
+    <string name="text_longitude">经度:</string>
+    <string name="setting">设置</string>
+    <string name="clip_no_settings">剪切板未检测到配置</string>
 </resources>

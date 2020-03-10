@@ -32,6 +32,9 @@ import com.sky.xposed.rimet.plugin.interfaces.XConfigManager;
 import com.sky.xposed.rimet.plugin.interfaces.XPluginManager;
 import com.sky.xposed.rimet.util.CollectionUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -54,15 +57,19 @@ public class DingDingHandler extends BaseHandler implements DingDingPlugin.Handl
     private boolean mEnableFastLucky;
     private boolean mEnableRecall;
     private boolean mEnableLocation;
+    private boolean mEnableWIFI;
+    private boolean mEnableBaseStation;
 
     public DingDingHandler(XPluginManager pluginManager) {
         super(pluginManager);
         mXConfigManager = getPluginManager().getConfigManager();
 
-        mEnableLucky = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_LUCKY, true);
-        mEnableFastLucky = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_FAST_LUCKY, true);
+        mEnableLucky = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_LUCKY, false);
+        mEnableFastLucky = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_FAST_LUCKY, false);
         mEnableRecall = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_RECALL, true);
         mEnableLocation = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_LOCATION, false);
+        mEnableWIFI = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_WIFI, false);
+        mEnableBaseStation = mXConfigManager.getBoolean(Constant.XFlag.ENABLE_BASESTATION, false);
     }
 
     @Override
@@ -139,6 +146,12 @@ public class DingDingHandler extends BaseHandler implements DingDingPlugin.Handl
                 break;
             case Constant.XFlag.ENABLE_LOCATION:
                 mEnableLocation = enable;
+                break;
+            case Constant.XFlag.ENABLE_WIFI:
+                mEnableWIFI = enable;
+                break;
+            case Constant.XFlag.ENABLE_BASESTATION:
+                mEnableBaseStation = enable;
                 break;
         }
     }
@@ -345,17 +358,25 @@ public class DingDingHandler extends BaseHandler implements DingDingPlugin.Handl
             if (objects == null || objects.length != 1) return;
 
             Location location = (Location) objects[0];
-
-            String latitude = mXConfigManager
-                    .getString(Constant.XFlag.LATITUDE, "");
-            String longitude = mXConfigManager
-                    .getString(Constant.XFlag.LONGITUDE, "");
-
-            if (!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
+            Double latitude = 0D;
+            Double longitude = 0D;
+            String locationData = mXConfigManager.getString(Constant.XFlag.LOCATIONDATA, "");
+            if (!TextUtils.isEmpty(locationData)){
+                try {
+                    JSONObject locationObject = new JSONObject(locationData);
+                    latitude = locationObject.getDouble("latitude");
+                    longitude = locationObject.getDouble("longitude");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (latitude != 0D && longitude != 0D) {
                 // 重新修改值
-                int number = new Random().nextInt(15 - 3 + 1) + 3;
-                location.setLongitude(Double.parseDouble(longitude) + Double.valueOf(number)/100000);
-                location.setLatitude(Double.parseDouble(latitude) + Double.valueOf(number)/100000);
+                Random random = new Random();
+                int xOffset = random.nextInt(15 - 3 + 1) + 3;
+                int yOffset = random.nextInt(13 - 2 + 1) + 2;
+                location.setLatitude(latitude + Double.valueOf(xOffset)/1000000);
+                location.setLongitude(longitude + Double.valueOf(yOffset)/1000000);
             }
         }
     }

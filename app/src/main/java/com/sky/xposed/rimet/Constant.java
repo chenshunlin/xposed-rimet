@@ -63,23 +63,37 @@ public interface Constant {
 
         int MAIN_MENU = 0x000001;
 
-        int ENABLE_LUCKY = 0x000002;
+        int ENABLE_LUCKY = 0x000002;//启用自动抢红包
 
-        int LUCKY_DELAYED = 0x000003;
+        int LUCKY_DELAYED = 0x000003;//红包延时
 
-        int ENABLE_FAST_LUCKY = 0x000004;
+        int ENABLE_FAST_LUCKY = 0x000004;//启用快速抢红包
 
-        int ENABLE_RECALL = 0x000005;
+        int ENABLE_RECALL = 0x000005;//消息防撤回
 
-        int ENABLE_LOCATION = 0x000006;
 
-        int ADDRESS = 0x000007;
+        int ENABLE_LOCATION = 0x000006;//启用定位模拟
+        int LOCATIONNAME = 0x0000007;//当前使用的定位标题
+        int LOCATIONDATA = 0x000008;//当前定位数据
 
-        int LATITUDE = 0x000008;
+        int LOCATIONLIST = 0x0000009;//存储的定位列表
 
-        int LONGITUDE = 0x000009;
+        int ENABLE_WIFI = 0x00000A;//启用WIFI模拟
+        int WIFINAME = 0x000000B;//当前WIFI名称
+        int WIFIDATA = 0x000000C;//当前WIFI数据
+        int WIFILIST = 0x000000D;//存储的WIFI列表
+        int ENABLE_WIFI_CURRENT = 0x00000E;//启用WIFI模拟
 
-        int UPDATE_LAST_TIME = 0x00000A;
+
+
+        int ENABLE_BASESTATION = 0x00000F;//启用基站模拟
+        int BASESTATIONNAME = 0x000010;//当前基站名称
+        int BASESTATIONDATA = 0x000011;//当前基站数据
+        int BASESTATIONLIST = 0x000012;//启用基站模拟
+
+        int UPDATE_LAST_TIME = 0x000FFF;//更新
+
+
     }
 
     interface Preference {

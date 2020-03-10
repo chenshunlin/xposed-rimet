@@ -38,9 +38,11 @@ import com.sky.xposed.rimet.contract.RimetContract;
 import com.sky.xposed.rimet.data.model.UpdateModel;
 import com.sky.xposed.rimet.plugin.interfaces.XConfig;
 import com.sky.xposed.rimet.plugin.interfaces.XPlugin;
-import com.sky.xposed.rimet.ui.activity.MapActivity;
+import com.sky.xposed.rimet.ui.activity.ManagerActivity;
 import com.sky.xposed.rimet.ui.util.ActivityUtil;
 import com.sky.xposed.rimet.ui.util.DialogUtil;
+
+import org.json.JSONObject;
 
 /**
  * Created by sky on 2019/3/13.
@@ -53,7 +55,12 @@ public class DingDingDialog extends CommonDialog implements RimetContract.View {
     private SwitchItemView sivFastLuckyEnable;
     private SwitchItemView sivRecallEnable;
     private SwitchItemView sivLocationEnable;
-    private SimpleItemView sivSettingsLocation;
+    private SwitchItemView sivWifiEnable;
+    private SwitchItemView sivWifiCurrentEnable;
+    private SwitchItemView sivBaseStationEnable;
+    private SimpleItemView sivSettingsLocation;//位置信息
+    private SimpleItemView sivSettingsWIFI;//WIFI信息
+    private SimpleItemView sivSettingsBaseStation;//基站信息
     private SimpleItemView sivLove;
     private SimpleItemView sivAbout;
 
@@ -91,19 +98,45 @@ public class DingDingDialog extends CommonDialog implements RimetContract.View {
         sivSettingsLocation = ViewUtil.newSimpleItemView(getContext(), "位置信息");
         sivSettingsLocation.setExtendHint("设置位置信息");
 
+        sivWifiEnable = ViewUtil.newSwitchItemView(getContext(), "虚拟附近WIFI");
+        sivWifiEnable.setDesc("开启时会修改附近WIFI列表");
+
+        sivWifiCurrentEnable = ViewUtil.newSwitchItemView(getContext(), "虚拟已连接WIFI");
+        sivWifiCurrentEnable.setDesc("开启时会修改当前已连接WIFI信息");
+
+        sivSettingsWIFI = ViewUtil.newSimpleItemView(getContext(), "WIFI信息");
+        sivSettingsWIFI.setExtendHint("设置WIFI信息");
+
+        sivBaseStationEnable = ViewUtil.newSwitchItemView(getContext(), "虚拟基站");
+        sivBaseStationEnable.setDesc("开启时会修改当前基站信息");
+
+        sivSettingsBaseStation = ViewUtil.newSimpleItemView(getContext(), "基站信息");
+        sivSettingsBaseStation.setExtendHint("设置基站信息");
+
+
+
         sivLove = ViewUtil.newSimpleItemView(getContext(), "爱心公益");
         sivAbout = ViewUtil.newSimpleItemView(getContext(), "关于");
 
+        //添加到页面
         frameView.addContent(tvPrompt);
-        frameView.addContent(sivLuckyEnable);
-        frameView.addContent(sivLuckyDelayed);
-        frameView.addContent(sivFastLuckyEnable);
-        frameView.addContent(sivRecallEnable);
-        frameView.addContent(sivLocationEnable);
-        frameView.addContent(sivSettingsLocation);
+        frameView.addContent(sivLuckyEnable);//红包开关
+        frameView.addContent(sivLuckyDelayed);//红包延迟
+        frameView.addContent(sivFastLuckyEnable);//快速抢红包
+        frameView.addContent(sivRecallEnable);//防止撤回
 
-        frameView.addContent(sivLove);
-        frameView.addContent(sivAbout);
+        frameView.addContent(sivLocationEnable);//开启虚拟定位
+        frameView.addContent(sivSettingsLocation);//虚拟定位设置
+
+        frameView.addContent(sivWifiEnable);//开启虚拟WIFI
+        frameView.addContent(sivWifiCurrentEnable);//开启虚拟WIFI
+        frameView.addContent(sivSettingsWIFI);//虚拟WIFI设置
+
+        frameView.addContent(sivBaseStationEnable);//开启虚拟基站
+        frameView.addContent(sivSettingsBaseStation);//虚拟基站设置
+
+        frameView.addContent(sivLove);//爱心公益
+        frameView.addContent(sivAbout);//关于
     }
 
     @Override
@@ -115,18 +148,23 @@ public class DingDingDialog extends CommonDialog implements RimetContract.View {
 
         setTitle(Constant.Name.TITLE);
 
-        TextView tvExt = sivSettingsLocation.getExtendView();
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) tvExt.getLayoutParams();
-        params.leftMargin = DisplayUtil.dip2px(getContext(), 100);
-        tvExt.setMaxLines(2);
-        tvExt.setEllipsize(TextUtils.TruncateAt.END);
-        tvExt.setTextSize(12);
+        SimpleItemView simpleItemViews[] = {sivSettingsLocation,sivSettingsWIFI,sivSettingsBaseStation};
+
+        for (int i = 0; i < simpleItemViews.length; i++) {
+            TextView tvExt = simpleItemViews[i].getExtendView();
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) tvExt.getLayoutParams();
+            params.leftMargin = DisplayUtil.dip2px(getContext(), 100);
+            tvExt.setMaxLines(2);
+            tvExt.setEllipsize(TextUtils.TruncateAt.END);
+            tvExt.setTextSize(12);
+        }
+
 
         SharedPreferences preferences = getDefaultSharedPreferences();
         XPlugin xPlugin = getPluginManager().getXPluginById(Constant.Plugin.DING_DING);
 
         sivLuckyEnable.bind(getDefaultSharedPreferences(),
-                Integer.toString(Constant.XFlag.ENABLE_LUCKY), true,
+                Integer.toString(Constant.XFlag.ENABLE_LUCKY), false,
                 (view1, key, value) -> {
                     xPlugin.setEnable(Constant.XFlag.ENABLE_LUCKY, value);
                     return true;
@@ -137,7 +175,7 @@ public class DingDingDialog extends CommonDialog implements RimetContract.View {
                 (view12, key, value) -> true);
 
         sivFastLuckyEnable.bind(getDefaultSharedPreferences(),
-                Integer.toString(Constant.XFlag.ENABLE_FAST_LUCKY), true,
+                Integer.toString(Constant.XFlag.ENABLE_FAST_LUCKY), false,
                 (view1, key, value) -> {
                     xPlugin.setEnable(Constant.XFlag.ENABLE_FAST_LUCKY, value);
                     return true;
@@ -157,15 +195,58 @@ public class DingDingDialog extends CommonDialog implements RimetContract.View {
                     return true;
                 });
 
+        sivWifiEnable.bind(getDefaultSharedPreferences(),
+                Integer.toString(Constant.XFlag.ENABLE_WIFI), false,
+                (view1, key, value) -> {
+                    xPlugin.setEnable(Constant.XFlag.ENABLE_WIFI, value);
+                    return true;
+                });
+
+        sivWifiCurrentEnable.bind(getDefaultSharedPreferences(),
+                Integer.toString(Constant.XFlag.ENABLE_WIFI_CURRENT), false,
+                (view1, key, value) -> {
+                    xPlugin.setEnable(Constant.XFlag.ENABLE_WIFI_CURRENT, value);
+                    return true;
+                });
+
+        sivBaseStationEnable.bind(getDefaultSharedPreferences(),
+                Integer.toString(Constant.XFlag.ENABLE_BASESTATION), false,
+                (view1, key, value) -> {
+                    xPlugin.setEnable(Constant.XFlag.ENABLE_BASESTATION, value);
+                    return true;
+                });
+
         // 设置初始信息
         sivSettingsLocation.setExtend(preferences.getString(
-                Integer.toString(Constant.XFlag.ADDRESS), ""));
+                Integer.toString(Constant.XFlag.LOCATIONNAME), ""));
         sivSettingsLocation.setOnClickListener(v -> {
             // 跳转到地图界面
             Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.setClassName(BuildConfig.APPLICATION_ID, MapActivity.class.getName());
+            intent.putExtra("flag", Constant.XFlag.ENABLE_LOCATION);
+            intent.setClassName(BuildConfig.APPLICATION_ID, ManagerActivity.class.getName());
             startActivityForResult(intent, 99);
         });
+
+        sivSettingsWIFI.setExtend(preferences.getString(
+                Integer.toString(Constant.XFlag.WIFINAME), ""));
+        sivSettingsWIFI.setOnClickListener(v -> {
+            // 跳转到地图界面
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.putExtra("flag", Constant.XFlag.ENABLE_WIFI);
+            intent.setClassName(BuildConfig.APPLICATION_ID, ManagerActivity.class.getName());
+            startActivityForResult(intent, 99);
+        });
+
+        sivSettingsBaseStation.setExtend(preferences.getString(
+                Integer.toString(Constant.XFlag.BASESTATIONNAME), ""));
+        sivSettingsBaseStation.setOnClickListener(v -> {
+            // 跳转到地图界面
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.putExtra("flag", Constant.XFlag.ENABLE_BASESTATION);
+            intent.setClassName(BuildConfig.APPLICATION_ID, ManagerActivity.class.getName());
+            startActivityForResult(intent, 99);
+        });
+
 
         sivLove.setOnClickListener(v -> {
             // 打开捐赠界面
@@ -186,13 +267,31 @@ public class DingDingDialog extends CommonDialog implements RimetContract.View {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == 99 && resultCode == Activity.RESULT_OK) {
-            // 保存位置信息
-            saveLocationInfo(
-                    data.getStringExtra("address"),
-                    data.getDoubleExtra("latitude", 0),
-                    data.getDoubleExtra("longitude", 0));
+            int flag = data.getIntExtra("flag",0);
+            if (Constant.XFlag.ENABLE_LOCATION == flag){
+                // 保存当前模拟信息
+                saveLocationInfo(
+                        data.getStringExtra("title"),
+                        data.getStringExtra("data"),
+                        sivSettingsLocation,
+                        Constant.XFlag.LOCATIONNAME,
+                        Constant.XFlag.LOCATIONDATA);
+            }else if (Constant.XFlag.ENABLE_WIFI == flag){
+                saveLocationInfo(
+                        data.getStringExtra("title"),
+                        data.getStringExtra("data"),
+                        sivSettingsWIFI,
+                        Constant.XFlag.WIFINAME,
+                        Constant.XFlag.WIFIDATA);
+            }else if (Constant.XFlag.ENABLE_BASESTATION == flag){
+                saveLocationInfo(
+                        data.getStringExtra("title"),
+                        data.getStringExtra("data"),
+                        sivSettingsBaseStation,
+                        Constant.XFlag.BASESTATIONNAME,
+                        Constant.XFlag.BASESTATIONDATA);
+            }
         }
     }
 
@@ -243,21 +342,18 @@ public class DingDingDialog extends CommonDialog implements RimetContract.View {
     }
 
     /**
-     * 保存位置信息
-     * @param address
-     * @param latitude
-     * @param longitude
+     * 保存当前模拟信息
+     * @param title
+     * @param data
      */
-    private void saveLocationInfo(String address, double latitude, double longitude) {
-
+    private void saveLocationInfo(String title, String data,SimpleItemView simpleItemView,int titleId,int dataId) {
         getDefaultSharedPreferences()
                 .edit()
-                .putString(Integer.toString(Constant.XFlag.ADDRESS), address)
-                .putString(Integer.toString(Constant.XFlag.LATITUDE), Double.toString(latitude))
-                .putString(Integer.toString(Constant.XFlag.LONGITUDE), Double.toString(longitude))
+                .putString(Integer.toString(titleId), title)
+                .putString(Integer.toString(dataId), data)
                 .apply();
 
         // 设置UI信息
-        sivSettingsLocation.setExtend(address);
+        simpleItemView.setExtend(title);
     }
 }

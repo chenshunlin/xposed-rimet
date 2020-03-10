@@ -67,6 +67,9 @@ import com.sky.xposed.rimet.ui.util.MapUtil;
 import com.sky.xposed.rimet.ui.util.PermissionUtil;
 import com.sky.xposed.rimet.util.CollectionUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +109,7 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
         mMapView = findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);
 
-        mListView = findViewById(R.id.list_view);
+        mListView = findViewById(R.id.list_view_data);
         mTvPrompt = findViewById(R.id.tv_prompt);
         mSearchResultAdapter = new SearchResultAdapter(this);
         mListView.setAdapter(mSearchResultAdapter);
@@ -266,10 +269,17 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
                 .getItem(mSearchResultAdapter.getSelectedPosition());
 
         Intent data = new Intent();
-        data.putExtra("address", mSearchResultAdapter.poiItemToString(poiItem));
-        data.putExtra("latitude", poiItem.getLatLonPoint().getLatitude());
-        data.putExtra("longitude", poiItem.getLatLonPoint().getLongitude());
-
+        data.putExtra("title", poiItem.getTitle());
+        JSONObject dataObject = new JSONObject();
+        try {
+            dataObject.put("title", poiItem.getTitle());
+            dataObject.put("address",mSearchResultAdapter.poiItemToString(poiItem));
+            dataObject.put("latitude",poiItem.getLatLonPoint().getLatitude());
+            dataObject.put("longitude", poiItem.getLatLonPoint().getLongitude());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        data.putExtra("data", dataObject.toString());
         setResult(Activity.RESULT_OK, data);
         onBackPressed();
     }
