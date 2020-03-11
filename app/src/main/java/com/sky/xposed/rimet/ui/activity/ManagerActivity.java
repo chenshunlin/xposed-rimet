@@ -1,5 +1,7 @@
 package com.sky.xposed.rimet.ui.activity;
 
+import android.Manifest;
+import android.annotation.NonNull;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipboardManager;
@@ -7,9 +9,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -111,11 +115,19 @@ public class ManagerActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         WifiManager wifiMgr = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                        if (!wifiMgr.isWifiEnabled()) {
+                            wifiMgr.setWifiEnabled(true);
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
+                                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            requestPermissions(new String[] { Manifest.permission.ACCESS_COARSE_LOCATION },
+                                    100);
+                            return;
+                        }
                         JSONObject wifiData = new JSONObject();
                         try {
                             wifiData.put("wifiEnabled",wifiMgr.isWifiEnabled());
                             wifiData.put("wifiState",wifiMgr.getWifiState());
-
                             JSONObject connectionInfo = new JSONObject();
                             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
                             String ssid = wifiInfo.getSSID();
@@ -441,6 +453,19 @@ public class ManagerActivity extends AppCompatActivity {
 
         }else {
             Toast.makeText(getApplicationContext(), R.string.clip_no_settings,Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
+                    Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                FloatingActionButton fab = findViewById(R.id.fab);
+                fab.callOnClick();
+            }
         }
     }
 
