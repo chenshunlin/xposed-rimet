@@ -152,6 +152,7 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
             Alog.d(">>>>>>>>>>>>>>>>>>>> RedPackets " + tClass);
             mStringMap.put(M.classz.class_defpackage_RedPacketsRpc, tClass.getName());
         } else if (superClass == mDatabaseClass && handlerDatabaseClass(tClass)) {
+            if (mStringMap.containsKey(M.classz.class_defpackage_MessageDs)) return;//防止扫描到MessageDs2
             Alog.d(">>>>>>>>>>>>>>>>>>>> Database " + tClass);
             mStringMap.put(M.classz.class_defpackage_MessageDs, tClass.getName());
         }
@@ -217,6 +218,7 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
 
     /**
      * 获取默认的包
+     *
      * @param sourcePath
      * @return
      * @throws IOException
