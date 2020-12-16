@@ -22,11 +22,11 @@ apply plugin: 'androidx.navigation.safeargs'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.sky.xposed.rimet"
+        applicationId "tk.anysoft.xposed.lark"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 24
-        versionName "1.3.4"
+        versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "armeabi-v7a"//, "arm64-v8a", "x86","arm64-v8a","x86_64"

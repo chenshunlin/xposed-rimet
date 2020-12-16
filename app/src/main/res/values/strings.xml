@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">钉钉助手</string>
+    <string name="app_name">飞书助手</string>
     <string name="location_manager_title">位置管理</string>
     <string name="wifi_manager_title">WIFI管理</string>
     <string name="wifi_collection_title">WIFI采集</string>
