@@ -45,6 +45,10 @@
             android:name="com.amap.api.v2.apikey"
             android:value="3e8b7afb696dbead493fbbdcb75047c9"/>
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCRM3fFGouJPAj2brfx6mFjYu6k7i_-N5g" />
+
         <service android:name="com.amap.api.location.APSService" />
 
         <meta-data

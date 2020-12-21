@@ -16,6 +16,9 @@
 
 package com.sky.xposed.rimet;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by sky on 2019/3/14.
  */
@@ -27,8 +30,10 @@ public interface XConstant {
     }
 
     interface Rimet {
-
-        String PACKAGE_NAME = "com.alibaba.android.rimet";
+        List<String> PACKAGE_NAME = Arrays.asList(
+                "com.alibaba.android.rimet",//钉钉
+                "com.alibaba.dingtalk.global"//钉钉 lite 国际版
+        );
     }
 
     interface Event {
@@ -37,6 +42,8 @@ public interface XConstant {
     }
 
     interface Key {
+
+        String PACKAGE_NAME = "package_name";
 
         String DATA = "data";
 

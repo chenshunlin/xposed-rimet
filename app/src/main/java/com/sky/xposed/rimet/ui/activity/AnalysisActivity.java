@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 
+import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ToastUtil;
 import com.sky.xposed.rimet.R;
 import com.sky.xposed.rimet.XConstant;
@@ -60,14 +61,16 @@ public class AnalysisActivity extends Activity {
         task.setOnPreCallback(() -> mLoadingDialog.show());
         task.setOnProgressCallback(text -> {
             mTvOutInfo.append(text);
-            int offset= mTvOutInfo.getLineCount() * mTvOutInfo.getLineHeight();
+            int offset = mTvOutInfo.getLineCount() * mTvOutInfo.getLineHeight();
             if (offset > mTvOutInfo.getHeight()) {
                 mTvOutInfo.scrollTo(0, offset - mTvOutInfo.getHeight());
             }
         });
         task.setCompleteCallback(this::onAnalysisResult);
         task.setThrowableCallback(tr -> onAnalysisError("分析信息失败!"));
-        task.executeOnExecutor(ExecutorUtil.getBackExecutor(), XConstant.Rimet.PACKAGE_NAME);
+        String packageName = getIntent().getStringExtra(XConstant.Key.PACKAGE_NAME);
+        Alog.d(">>>>>>>>>>packageName:", packageName);
+        task.executeOnExecutor(ExecutorUtil.getBackExecutor(), packageName);
     }
 
 //    @Override

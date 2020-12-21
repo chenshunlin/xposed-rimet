@@ -18,6 +18,8 @@ package com.sky.xposed.rimet.ui.dialog;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -29,7 +31,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.sky.xposed.common.util.CollectionUtil;
+import com.sky.xposed.common.util.ToastUtil;
 import com.sky.xposed.rimet.XConstant;
 import com.sky.xposed.rimet.contract.WifiContract;
 import com.sky.xposed.rimet.data.model.WifiModel;
@@ -109,6 +116,8 @@ public class WifiDialog extends BasePluginDialog implements
 
         menu.add(0, 1, 0, "添加");
         menu.add(0, 2, 0, "清空");
+        menu.add(0, 3, 0, "导入");
+        menu.add(0, 4, 0, "导出");
     }
 
     @Override
@@ -131,28 +140,62 @@ public class WifiDialog extends BasePluginDialog implements
             DialogUtil.showEditDialog(getContext(),
                     "提示", alias, "请输入保存的别名", (view, value) -> {
 
-                if (TextUtils.isEmpty(value)) {
-                    showMessage("输入的信息不能为空!");
-                    return;
-                }
+                        if (TextUtils.isEmpty(value)) {
+                            showMessage("输入的信息不能为空!");
+                            return;
+                        }
 
-                // 保存名称
-                getDefaultPreferences().putString(XConstant.Key.LAST_ALIAS, value);
+                        // 保存名称
+                        getDefaultPreferences().putString(XConstant.Key.LAST_ALIAS, value);
 
-                // 添加
-                mPresenter.add(value);
-            });
+                        // 添加
+                        mPresenter.add(value);
+                    });
             return true;
         } else if (2 == itemId) {
             // 清空
             DialogUtil.showDialog(getContext(),
                     "提示", "\n是否清空列表所有信息!", (dialog, which) -> {
 
-                if (mWifiModels != null) {
-                    mWifiModels.clear();
-                    mPresenter.save(mWifiModels);
+                        if (mWifiModels != null) {
+                            mWifiModels.clear();
+                            mPresenter.save(mWifiModels);
+                        }
+                    });
+            return true;
+        } else if (3 == itemId) {
+            // 导入
+            ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            // 将文本内容放到系统剪贴板里。
+            CharSequence models = cm.getText();
+            if (null != models) {
+                JsonArray array = new JsonParser().parse(models.toString()).getAsJsonArray();
+                for (final JsonElement elem : array) {
+                    WifiModel tmpModel = new Gson().fromJson(elem, WifiModel.class);
+                    boolean isContain = false;
+                    for (WifiModel model : mWifiModels) {
+                        if (model.hashCode() == tmpModel.hashCode() || model.getName().equals(tmpModel.getName())) {
+                            isContain = true;
+                        }
+                    }
+                    if (!isContain) mWifiModels.add(tmpModel);
                 }
-            });
+                mPresenter.save(mWifiModels);
+                ToastUtil.show("WIFI配置导入成功！");
+            }
+            return true;
+        } else if (4 == itemId) {
+            // 导出
+            DialogUtil.showDialog(getContext(),
+                    "提示", "\n是否导出WIFI配置？", (dialog, which) -> {
+                        if (mWifiModels != null) {
+                            String jsonString = new Gson().toJson(mWifiModels);
+                            ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                            // 将文本内容放到系统剪贴板里。
+                            cm.setText(jsonString);
+                            ToastUtil.show("WIFI信息导出到粘贴板成功！");
+                        }
+                    });
             return true;
         }
         return super.onMoreItemSelected(item);
@@ -175,10 +218,10 @@ public class WifiDialog extends BasePluginDialog implements
 
         DialogUtil.showDialog(getContext(),
                 "提示", "\n是否删除该Wifi信息?", (dialog, which) -> {
-            // 删除信息并保存
-            mWifiModels.remove(position);
-            mPresenter.save(mWifiModels);
-        });
+                    // 删除信息并保存
+                    mWifiModels.remove(position);
+                    mPresenter.save(mWifiModels);
+                });
         return true;
     }
 
@@ -235,7 +278,7 @@ public class WifiDialog extends BasePluginDialog implements
             PermissionUtil.requestPermissions(getActivity(),
                     new String[]{
                             Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION },
+                            Manifest.permission.ACCESS_FINE_LOCATION},
                     99);
             return false;
         }

@@ -18,7 +18,10 @@ package com.sky.xposed.rimet;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
+import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ToastUtil;
 import com.sky.xposed.core.XStore;
 import com.sky.xposed.core.adapter.CoreListenerAdapter;
@@ -30,6 +33,7 @@ import com.sky.xposed.core.interfaces.XPlugin;
 import com.sky.xposed.core.internal.CoreManager;
 import com.sky.xposed.javax.XposedPlus;
 import com.sky.xposed.javax.XposedUtil;
+import com.sky.xposed.rimet.plugin.LuckyPlugin;
 import com.sky.xposed.rimet.util.FileUtil;
 import com.sky.xposed.ui.util.CoreUtil;
 import com.sky.xposed.ui.util.DisplayUtil;
@@ -50,7 +54,7 @@ public class Main implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpParam) throws Throwable {
 
-        if (!XConstant.Rimet.PACKAGE_NAME.equals(lpParam.packageName)) return;
+        if (!XConstant.Rimet.PACKAGE_NAME.contains(lpParam.packageName)) return;
 
         // 初始化XposedPlus
         XposedPlus.setDefaultInstance(new XposedPlus.Builder(lpParam)
@@ -64,6 +68,7 @@ public class Main implements IXposedHookLoadPackage {
 
     /**
      * 处理加载的包
+     *
      * @param param
      * @param lpParam
      * @throws Throwable
@@ -77,6 +82,7 @@ public class Main implements IXposedHookLoadPackage {
 
         final String className = application.getClass().getName();
 
+        Alog.d(">>>>>>>>>>className:", className);
         if (!"com.alibaba.android.rimet.LauncherApplication".equals(className)) {
             // 不需要处理
             return;
@@ -92,9 +98,21 @@ public class Main implements IXposedHookLoadPackage {
                         return XStore.getConfigClass();
                     }
 
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     protected List<Class<? extends XPlugin>> getPluginData() {
-                        return XStore.getPluginClass();
+                        List<Class<? extends XPlugin>> plugins = XStore.getPluginClass();
+                        if (XConstant.Rimet.PACKAGE_NAME.get(1).equals(lpParam.packageName)) {
+                            plugins.remove(LuckyPlugin.class);
+                        }
+                        StringBuilder lists = new StringBuilder();
+                        plugins.forEach(
+                                item -> {
+                                    lists.append(item.getName()).append(",");
+                                }
+                        );
+                        Alog.d(this.getClass().getName() + "init plugins:", lpParam.packageName + ": " + lists.toString());
+                        return plugins;
                     }
                 })
                 .setCoreListener(new CoreListenerAdapter() {
@@ -117,7 +135,8 @@ public class Main implements IXposedHookLoadPackage {
                     }
                 })
                 .build();
-
+        Alog.setDebug(BuildConfig.DEBUG);
+        Alog.d(this.getClass().getName(), "init");
         // 开始处理加载的包
         coreManager.loadPlugins();
     }

@@ -17,7 +17,10 @@
 package com.sky.xposed.rimet;
 
 import android.app.Application;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
+import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ToastUtil;
 import com.sky.xposed.core.XStore;
 import com.sky.xposed.core.adapter.CoreListenerAdapter;
@@ -26,6 +29,7 @@ import com.sky.xposed.core.interfaces.XConfig;
 import com.sky.xposed.core.interfaces.XCoreManager;
 import com.sky.xposed.core.interfaces.XPlugin;
 import com.sky.xposed.core.internal.CoreManager;
+import com.sky.xposed.rimet.plugin.LuckyPlugin;
 import com.sky.xposed.ui.util.CoreUtil;
 import com.sky.xposed.ui.util.DisplayUtil;
 import com.squareup.picasso.Picasso;
@@ -51,15 +55,29 @@ public class App extends Application {
                         return XStore.getConfigClass();
                     }
 
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     protected List<Class<? extends XPlugin>> getPluginData() {
-                        return XStore.getPluginClass();
+                        List<Class<? extends XPlugin>> plugins = XStore.getPluginClass();
+                        if (XConstant.Rimet.PACKAGE_NAME.get(1).equals(getPackageName())) {
+                            plugins.remove(LuckyPlugin.class);
+                        }
+                        StringBuilder lists = new StringBuilder();
+                        plugins.forEach(
+                                item -> {
+                                    lists.append(item.getName()).append(",");
+                                }
+                        );
+                        Alog.d(this.getClass().getName() + "init plugins:", getPackageName() + ": " + lists.toString());
+                        return plugins;
                     }
                 })
                 .setCoreListener(new CoreListenerAdapter())
                 .build();
 
         // 初始化
+        Alog.setDebug(BuildConfig.DEBUG);
+        Alog.d(this.getClass().getName(), "init");
         CoreUtil.init(coreManager);
         DisplayUtil.init(this);
         ToastUtil.getInstance().init(this);

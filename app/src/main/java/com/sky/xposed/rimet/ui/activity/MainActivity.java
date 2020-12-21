@@ -41,11 +41,26 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         ItemMenu imVersion = findViewById(R.id.im_version);
+        imVersion.setDesc("v" + BuildConfig.VERSION_NAME);
+
+        //钉钉版本信息
         ItemMenu imDingVersion = findViewById(R.id.im_ding_version);
+        if (getVersionName(XConstant.Rimet.PACKAGE_NAME.get(0)).equals("Unknown")) {
+            imDingVersion.setVisibility(View.GONE);
+
+        } else {
+            imDingVersion.setDesc(getVersionName(XConstant.Rimet.PACKAGE_NAME.get(0)));
+        }
+
+        //lite 版本信息
+        ItemMenu imDingLiteVersion = findViewById(R.id.im_dinglite_version);
+        if (getVersionName(XConstant.Rimet.PACKAGE_NAME.get(1)).equals("Unknown")) {
+            imDingLiteVersion.setVisibility(View.GONE);
+        } else {
+            imDingLiteVersion.setDesc(getVersionName(XConstant.Rimet.PACKAGE_NAME.get(1)));
+        }
         TextView tvSupportVersion = findViewById(R.id.tv_support_version);
 
-        imVersion.setDesc("v" + BuildConfig.VERSION_NAME);
-        imDingVersion.setDesc(getVersionName(XConstant.Rimet.PACKAGE_NAME));
 
 //        XVersionManager versionManager = CoreUtil.getCoreManager().getVersionManager();
 

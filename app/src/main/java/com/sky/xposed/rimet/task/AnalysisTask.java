@@ -24,6 +24,7 @@ import android.text.TextUtils;
 
 import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ClassUtil;
+import com.sky.xposed.rimet.XConstant;
 import com.sky.xposed.rimet.data.M;
 
 import java.io.IOException;
@@ -95,8 +96,8 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
             publishProgress("参数异常!");
             return null;
         }
-
-        String sourcePath = getSourcePath(strings[0]);
+        String packageName = strings[0];
+        String sourcePath = getSourcePath(packageName);
 
         long startTime = System.currentTimeMillis();
 
@@ -104,12 +105,13 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
         mClassLoader = new PathClassLoader(sourcePath, ClassLoader.getSystemClassLoader());
 
         mDatabaseClass = loadClass("com.alibaba.wukong.im.base.IMDatabase");
-
+        Alog.d("current analisis package:", packageName);
         for (String className : classNames) {
 
-            handlerClass(className);
+            handlerClass(className, packageName);
 
-            if (mStringMap.size() >= 3) {
+            if ((packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(0)) && mStringMap.size() >= 3) //rimet
+                    || (packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(1)) && mStringMap.size() >= 2)) {//ding lite
                 // 不需要处理了
                 Alog.d(">>>>>>>>>>>>>>> 不需要处理了");
                 break;
@@ -127,7 +129,7 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
         return info.sourceDir;
     }
 
-    private void handlerClass(String className) {
+    private void handlerClass(String className, String packageName) {
 
         Class tClass = loadClass(className);
 
@@ -148,11 +150,12 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
         if (Object.class.equals(superClass) && handlerServiceFactoryClass(tClass)) {
             Alog.d(">>>>>>>>>>>>>>>>>>>> ServiceFactory " + tClass);
             mStringMap.put(M.classz.class_defpackage_ServiceFactory, tClass.getName());
-        } else if (Object.class.equals(superClass) && handlerRedPacketsClass(tClass)) {
+        } else if (Object.class.equals(superClass) && packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(0)) && handlerRedPacketsClass(tClass)) {
             Alog.d(">>>>>>>>>>>>>>>>>>>> RedPackets " + tClass);
             mStringMap.put(M.classz.class_defpackage_RedPacketsRpc, tClass.getName());
         } else if (superClass == mDatabaseClass && handlerDatabaseClass(tClass)) {
-            if (mStringMap.containsKey(M.classz.class_defpackage_MessageDs)) return;//防止扫描到MessageDs2
+            if (mStringMap.containsKey(M.classz.class_defpackage_MessageDs))
+                return;//防止扫描到MessageDs2
             Alog.d(">>>>>>>>>>>>>>>>>>>> Database " + tClass);
             mStringMap.put(M.classz.class_defpackage_MessageDs, tClass.getName());
         }

@@ -16,10 +16,23 @@
 
 package com.sky.xposed.rimet.plugin;
 
+import android.content.Context;
+import android.location.Criteria;
+import android.location.GpsStatus;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationResult;
 import com.sky.xposed.annotations.APlugin;
+import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.core.interfaces.XCoreManager;
 import com.sky.xposed.rimet.XConstant;
 import com.sky.xposed.rimet.plugin.base.BaseDingPlugin;
@@ -39,25 +52,231 @@ public class LocationPlugin extends BaseDingPlugin {
         super(coreManager);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void hook() {
-
+        //通用 hook GPS为打开状态
+        findMethod(
+                LocationManager.class,
+                "isProviderEnabled", String.class)
+                .before(param -> {
+                    Log.d(">>>>>>>>>>>", "isProviderEnabled:" + param.args[0]);
+                    if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
+                        if ("gps".equals(param.args[0])) {
+                            param.setResult(true);
+                        }
+                    }
+                });
         /****************  位置信息处理 ******************/
 
+        String packageName = getCoreManager().getLoadPackage().getPackageName();
+        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)) {
+            findMethod(
+                    "com.amap.api.location.AMapLocationClient",
+                    "getLastKnownLocation")
+                    .after(param -> param.setResult(getLastKnownLocation(param.getResult())));
+
+            findMethod(
+                    "com.amap.api.location.AMapLocationClient",
+                    "setLocationListener",
+                    "com.amap.api.location.AMapLocationListener")
+                    .before(param -> param.args[0] = proxyLocationListener(param.args[0]));
+        } else if (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName)) {
+            Log.d("anysoft----------->",
+                    XConstant.Rimet.PACKAGE_NAME.get(1) + " : location");
+
+
+            findMethod(
+                    com.google.android.gms.location.LocationCallback.class,
+                    "onLocationResult",
+                    LocationResult.class)
+                    .before(param -> {
+                        Log.d("anysoft----------->",
+                                "com.google.android.gms.location.LocationCallback.onLocationResult:"
+                                        + ((LocationResult) param.args[0]).getLastLocation().getLatitude()
+                                        + ((LocationResult) param.args[0]).getLastLocation().getLongitude());
+                    });
+
+
+            findMethod(
+                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
+                    "onConnected", Bundle.class)
+                    .before(param -> {
+                        Log.d("anysoft----------->",
+                                "GoogleLocationClient.onConnected:");
+                    });
+
+            findMethod(
+                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
+                    "onConnectionSuspended", int.class)
+                    .after(param -> {
+                        Log.d("anysoft----------->",
+                                "GoogleLocationClient.onConnectionSuspended:");
+                    });
+
+            findMethod(
+                    GooglePlayServicesUtil.class,
+                    "isGooglePlayServicesAvailable",
+                    Context.class)
+                    .after(param -> {
+                        Log.d("anysoft----------->", "GooglePlayServicesUtil.isGooglePlayServicesAvailable:"
+                                + param.getResult());
+                    });
+
+            findMethod(
+                    FusedLocationProviderClient.class,
+                    "getLastLocation"
+            )
+                    .after(param -> {
+                        Log.d("anysoft----------->", "FusedLocationProviderClient.getLastLocation:"
+                                + param.getResult());
+                    });
+            //com.alibaba.laiwang.xpn
+            findMethod(
+                    "com.alibaba.laiwang.xpn.XpnUtils",
+                    "isSupportMIUIPush",
+                    Context.class
+            )
+                    .after(param -> {
+                        Log.d("anysoft----------->", "XpnUtils.isSupportMIUIPush:"
+                                + param.getResult());
+                    });
+            findMethod(
+                    "com.alibaba.laiwang.xpn.XpnUtils",
+                    "isMIUIPushEnabled",
+                    Context.class
+            )
+                    .after(param -> {
+                        Log.d("anysoft----------->", "XpnUtils.isMIUIPushEnabled:"
+                                + param.getResult());
+                    });
+            findMethod(
+                    "com.alibaba.laiwang.xpn.XpnUtils",
+                    "isSupportHuaweiPush",
+                    Context.class
+            )
+                    .after(param -> {
+                        Log.d("anysoft----------->", "XpnUtils.isSupportHuaweiPush:"
+                                + param.getResult());
+                    });
+            findMethod(
+                    "com.alibaba.laiwang.xpn.XpnUtils",
+                    "isSupportFCM",
+                    Context.class
+            )
+                    .after(param -> {
+                        Log.d("anysoft----------->", "XpnUtils.isSupportFCM:"
+                                + param.getResult());
+                    });
+
+
+        }
+
+    }
+
+    private void hookBasicGPS() {
         findMethod(
-                "com.amap.api.location.AMapLocationClient",
-                "getLastKnownLocation")
-                .after(param -> param.setResult(getLastKnownLocation(param.getResult())));
+                LocationManager.class,
+                "getBestProvider", Criteria.class, boolean.class)
+                .before(param -> {
+                    Log.d(">>>>>>>>>>>", "getBestProvider:" + param.args[0]);
+                    if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
+                        param.setResult("gps");
+                    }
+                });
 
         findMethod(
-                "com.amap.api.location.AMapLocationClient",
-                "setLocationListener",
-                "com.amap.api.location.AMapLocationListener")
-                .before(param -> param.args[0] = proxyLocationListener(param.args[0]));
+                LocationManager.class,
+                "getProviders", Criteria.class, boolean.class)
+                .before(param -> {
+                    Log.d(">>>>>>>>>>>", "getProviders:" + param.args[0]);
+                    if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
+                        Log.e("", "getProviders");
+                    }
+                });
+
+        findMethod(
+                LocationManager.class,
+                "getGpsStatus", GpsStatus.class)
+                .after(param -> {
+                    Log.d(">>>>>>>>>>>", "getGpsStatus");
+                    if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
+                        GpsStatus gss = (GpsStatus) param.getResult();
+                        setGpsStatus(gss);
+                        param.setResult(gss);
+                    }
+                });
+
+        findMethod(
+                LocationManager.class,
+                "requestLocationUpdates", String.class, long.class, float.class, LocationListener.class)
+                .before(param -> {
+                    Log.d(">>>>>>>>>>>", "requestLocationUpdates");
+                    if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
+                        param.args[0] = proxyLocationListener(param.args[0]);
+                    }
+                });
+
+
+        findMethod(
+                LocationManager.class,
+                "getLastKnownLocation", String.class)
+                .after(param -> {
+                    Log.d(">>>>>>>>>>>", "getLastKnownLocation");
+//                        param.setResult(getLastKnownLocation(param.getResult()));
+                    Location l = new Location(android.location.LocationManager.GPS_PROVIDER);
+                    l.setLatitude(22.54245);
+                    l.setLongitude(113.949098);
+                    param.setResult(l);
+                });
+
+        findMethod(
+                LocationManager.class,
+                "getLastLocation")
+                .after(param -> {
+                    Log.d(">>>>>>>>>>>", "getLastKnownLocation");
+//                        param.setResult(getLastKnownLocation(param.getResult()));
+                    Location l = new Location(android.location.LocationManager.GPS_PROVIDER);
+                    l.setLatitude(22.54245);
+                    l.setLongitude(113.949098);
+                    param.setResult(l);
+                });
+    }
+
+    private void setGpsStatus(GpsStatus gss) {
+        Class<?> clazz = GpsStatus.class;
+        Method m = null;
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.getName().equals("setStatus")) {
+                if (method.getParameterTypes().length > 1) {
+                    m = method;
+                    break;
+                }
+            }
+        }
+        m.setAccessible(true);
+        //make the apps belive GPS works fine now
+        int svCount = 5;
+        int[] prns = {1, 2, 3, 4, 5};
+        float[] snrs = {0, 0, 0, 0, 0};
+        float[] elevations = {0, 0, 0, 0, 0};
+        float[] azimuths = {0, 0, 0, 0, 0};
+        int ephemerisMask = 0x1f;
+        int almanacMask = 0x1f;
+        //5 satellites are fixed
+        int usedInFixMask = 0x1f;
+        try {
+            if (m != null) {
+                m.invoke(gss, svCount, prns, snrs, elevations, azimuths, ephemerisMask, almanacMask, usedInFixMask);
+            }
+        } catch (Exception e) {
+            Alog.d("locationplugin:", e.getLocalizedMessage());
+        }
     }
 
     /**
      * 获取最后一次位置信息
+     *
      * @param location
      * @return
      */
@@ -67,6 +286,7 @@ public class LocationPlugin extends BaseDingPlugin {
 
     /**
      * 代理位置监听
+     *
      * @param listener
      * @return
      */
@@ -84,6 +304,7 @@ public class LocationPlugin extends BaseDingPlugin {
 
     /**
      * 是否启用虚拟位置
+     *
      * @return
      */
     private boolean isEnableVirtualLocation() {
