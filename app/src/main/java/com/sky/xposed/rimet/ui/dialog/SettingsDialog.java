@@ -85,32 +85,33 @@ public class SettingsDialog extends BasePluginDialog {
 
 
         /*****************   红包   ****************/
+        //只有国内版支持红包功能
+        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(getCoreManager().getLoadPackage().getPackageName())){
+            XViewUtil.newTopSortItemView(getContext(), "红包")
+                    .addToFrame(frameView);
 
-        XViewUtil.newTopSortItemView(getContext(), "红包")
-                .addToFrame(frameView);
 
+            XViewUtil.newSwitchItemView(getContext(), "快速打开红包", "用户点击红包,程序自动打开红包")
+                    .trackBind(XConstant.Key.ENABLE_FAST_LUCKY, Boolean.FALSE)
+                    .addToFrame(frameView);
 
-        XViewUtil.newSwitchItemView(getContext(), "快速打开红包", "用户点击红包,程序自动打开红包")
-                .trackBind(XConstant.Key.ENABLE_FAST_LUCKY, Boolean.FALSE)
-                .addToFrame(frameView);
+            GroupItemView luckyGroup = new GroupItemView(getContext());
+            luckyGroup.setVisibility(View.GONE);
 
-        GroupItemView luckyGroup = new GroupItemView(getContext());
-        luckyGroup.setVisibility(View.GONE);
+            XViewUtil.newSwitchItemView(getContext(), "自动接收红包", "开启时自动接收红包")
+                    .trackBind(XConstant.Key.ENABLE_LUCKY, Boolean.FALSE, luckyGroup)
+                    .addToFrame(frameView);
 
-        XViewUtil.newSwitchItemView(getContext(), "自动接收红包", "开启时自动接收红包")
-                .trackBind(XConstant.Key.ENABLE_LUCKY, Boolean.FALSE, luckyGroup)
-                .addToFrame(frameView);
+            luckyGroup.addToFrame(frameView);
 
-        luckyGroup.addToFrame(frameView);
-
-        EditNumItemView sivLuckyDelayed = new EditNumItemView(getContext(), new UAttributeSet.Build().build());
-        sivLuckyDelayed.setMaxLength(4);
-        sivLuckyDelayed.setUnit("毫秒");
-        sivLuckyDelayed.setName("红包延迟时间");
-        sivLuckyDelayed.setExtendHint("延迟时间单位(毫秒)");
-        sivLuckyDelayed.trackBind(XConstant.Key.LUCKY_DELAYED, 500);
-        sivLuckyDelayed.addToFrame(luckyGroup);
-
+            EditNumItemView sivLuckyDelayed = new EditNumItemView(getContext(), new UAttributeSet.Build().build());
+            sivLuckyDelayed.setMaxLength(4);
+            sivLuckyDelayed.setUnit("毫秒");
+            sivLuckyDelayed.setName("红包延迟时间");
+            sivLuckyDelayed.setExtendHint("延迟时间单位(毫秒)");
+            sivLuckyDelayed.trackBind(XConstant.Key.LUCKY_DELAYED, 500);
+            sivLuckyDelayed.addToFrame(luckyGroup);
+        }
 
         /*****************   防撤回   ****************/
 
@@ -122,7 +123,7 @@ public class SettingsDialog extends BasePluginDialog {
                 .addToFrame(frameView);
 
 
-        XViewUtil.newSortItemView(getContext(), "打卡(Beta)")
+        XViewUtil.newSortItemView(getContext(), "打卡")
                 .addToFrame(frameView);
 
         /*****************   虚拟定位   ****************/
@@ -246,6 +247,7 @@ public class SettingsDialog extends BasePluginDialog {
             // 进入分析界面
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.setClassName(BuildConfig.APPLICATION_ID, AnalysisActivity.class.getName());
+            intent.putExtra(XConstant.Key.PACKAGE_NAME,getCoreManager().getLoadPackage().getPackageName());
             startActivityForResult(intent, 99);
         });
 
@@ -262,7 +264,8 @@ public class SettingsDialog extends BasePluginDialog {
 
         menu.add(0, 0, 0, "爱心公益");
         menu.add(0, 1, 0, "助手");
-        menu.add(0, 2, 0, "关于");
+        menu.add(0, 2, 0, "适配");
+        menu.add(0, 3, 0, "关于");
     }
 
     @Override
@@ -281,6 +284,10 @@ public class SettingsDialog extends BasePluginDialog {
                 ActivityUtil.startActivity(getContext(), intent);
                 return true;
             case 2:
+                // 强制适配
+                tvPrompt.callOnClick();
+                return true;
+            case 3:
                 // 打开关于界面
                 DialogUtil.showAboutDialog(getContext());
                 return true;
@@ -360,7 +367,12 @@ public class SettingsDialog extends BasePluginDialog {
         if (requestCode != 99 || Activity.RESULT_OK != resultCode) return;
 
         Map<Integer, String> map = (Map<Integer, String>) data.getSerializableExtra(XConstant.Key.DATA);
+        String packageName = getCoreManager().getLoadPackage().getPackageName();
 
+
+        if (CollectionUtil.isEmpty(map)
+                || (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName) && map.size() < 3)
+                || (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName) && map.size() < 2) )
         if (CollectionUtil.isEmpty(map) || map.size() < 3) {
             showMessage("无法获取适配的版本信息!");
             return;
@@ -374,8 +386,11 @@ public class SettingsDialog extends BasePluginDialog {
         preferences.putString(toHexString(M.sky.rimet_package_md5), md5);
         preferences.putString(toHexString(M.classz.class_defpackage_MessageDs), map.get(M.classz.class_defpackage_MessageDs));
         preferences.putString(toHexString(M.classz.class_defpackage_ServiceFactory), map.get(M.classz.class_defpackage_ServiceFactory));
-        preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc), map.get(M.classz.class_defpackage_RedPacketsRpc));
-        preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc_9), map.get(M.classz.class_defpackage_RedPacketsRpc) + "$9");
+        //dingtalk lite 不支持 redpacket
+        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)){
+            preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc), map.get(M.classz.class_defpackage_RedPacketsRpc));
+            preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc_9), map.get(M.classz.class_defpackage_RedPacketsRpc) + "$9");
+        }
 
         DialogUtil.showDialog(getContext(),
                 "提示", "\n适配成功! 重启即可生效,是否马上重启?", (dialog, which) -> {

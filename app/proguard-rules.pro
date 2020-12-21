@@ -60,3 +60,9 @@
 
 -keep class com.amap.api.maps2d.**{*;}
 -keep class com.amap.api.mapcore2d.**{*;}
+
+-keep class com.google.android.gms.**{*;}
+-keep class com.google.maps.android.**{*;}
+
+-dontwarn com.google.maps.**
+-dontwarn com.google.android.gms.**

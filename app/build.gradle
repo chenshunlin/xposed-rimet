@@ -56,6 +56,7 @@ android {
             }
             minifyEnabled true // 已开源
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.sky
         }
         debug {
             applicationVariants.all { variant ->
@@ -64,6 +65,7 @@ android {
                 }
             }
             minifyEnabled false
+            signingConfig signingConfigs.sky
         }
     }
 

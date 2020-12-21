@@ -17,6 +17,8 @@
 package com.sky.xposed.rimet.ui.dialog;
 
 import android.app.Activity;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -27,7 +29,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.sky.xposed.common.util.CollectionUtil;
+import com.sky.xposed.common.util.ToastUtil;
 import com.sky.xposed.rimet.BuildConfig;
 import com.sky.xposed.rimet.XConstant;
 import com.sky.xposed.rimet.contract.LocationContract;
@@ -108,6 +115,8 @@ public class LocationDialog extends BasePluginDialog implements
 
         menu.add(0, 1, 0, "添加");
         menu.add(0, 2, 0, "清空");
+        menu.add(0, 3, 0, "导入");
+        menu.add(0, 4, 0, "导出");
     }
 
     @Override
@@ -132,11 +141,45 @@ public class LocationDialog extends BasePluginDialog implements
             DialogUtil.showDialog(getContext(),
                     "提示", "\n是否清空列表所有信息!", (dialog, which) -> {
 
-                if (mLocationModels != null) {
-                    mLocationModels.clear();
-                    mPresenter.save(mLocationModels);
+                        if (mLocationModels != null) {
+                            mLocationModels.clear();
+                            mPresenter.save(mLocationModels);
+                        }
+                    });
+            return true;
+        } else if (3 == itemId) {
+            // 导入
+            ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            // 将文本内容放到系统剪贴板里。
+            CharSequence models = cm.getText();
+            if (null != models) {
+                JsonArray array = new JsonParser().parse(models.toString()).getAsJsonArray();
+                for (final JsonElement elem : array) {
+                    LocationModel tmpModel = new Gson().fromJson(elem, LocationModel.class);
+                    boolean isContain = false;
+                    for (LocationModel model : mLocationModels) {
+                        if (model.hashCode() == tmpModel.hashCode() || model.getAddress().equals(tmpModel.getAddress())) {
+                            isContain = true;
+                        }
+                    }
+                    if (!isContain) mLocationModels.add(tmpModel);
                 }
-            });
+                mPresenter.save(mLocationModels);
+                ToastUtil.show("定位配置导入成功！");
+            }
+            return true;
+        } else if (4 == itemId) {
+            // 导出
+            DialogUtil.showDialog(getContext(),
+                    "提示", "\n是否导出定位配置？", (dialog, which) -> {
+                        if (mLocationModels != null) {
+                            String jsonString = new Gson().toJson(mLocationModels);
+                            ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                            // 将文本内容放到系统剪贴板里。
+                            cm.setText(jsonString);
+                            ToastUtil.show("定位信息导出到粘贴板成功！");
+                        }
+                    });
             return true;
         }
         return super.onMoreItemSelected(item);
@@ -159,10 +202,10 @@ public class LocationDialog extends BasePluginDialog implements
 
         DialogUtil.showDialog(getContext(),
                 "提示", "\n是否删除该位置信息?", (dialog, which) -> {
-            // 删除信息并保存
-            mLocationModels.remove(position);
-            mPresenter.save(mLocationModels);
-        });
+                    // 删除信息并保存
+                    mLocationModels.remove(position);
+                    mPresenter.save(mLocationModels);
+                });
         return true;
     }
 

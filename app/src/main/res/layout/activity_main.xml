@@ -52,6 +52,18 @@
             />
 
         <com.sky.xposed.ui.view.ItemMenu
+            android:id="@+id/im_dinglite_version"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:onClick="onClick"
+            app:sky_itemMenuLine="false"
+            app:sky_itemMenuTextSize="15sp"
+            app:sky_itemMenuShowMore="false"
+            app:sky_itemMenuName="钉钉Lite版本"
+            android:background="@drawable/selector_item_menu"
+            />
+
+        <com.sky.xposed.ui.view.ItemMenu
             android:id="@+id/im_source"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
