@@ -20,6 +20,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ToastUtil;
@@ -40,6 +41,8 @@ import com.sky.xposed.ui.util.DisplayUtil;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -61,9 +64,24 @@ public class Main implements IXposedHookLoadPackage {
                 .throwableCallback(new ThrowableAdapter())
                 .build());
 
-        XposedUtil.findMethod(
-                "com.alibaba.android.dingtalkbase.multidexsupport.DDApplication", "onCreate")
-                .before(param -> handleLoadPackage(param, lpParam));
+        try {
+//            XposedUtil.findMethod(
+//                    "com.alibaba.android.dingtalkbase.multidexsupport.DDApplication", "onCreate")
+//                    .before(param -> handleLoadPackage(param, lpParam));
+
+            XposedUtil.findMethod(
+                    "com.alibaba.android.rimet.LauncherApplication", "onCreate")
+                    .after(param -> handleLoadPackage(param, lpParam));
+        } catch (Throwable throwable) {
+            StringWriter sw = new StringWriter();
+            throwable.printStackTrace(new PrintWriter(sw, true));
+            Alog.setDebug(true);
+            Alog.i(">>>>>>>>>>className", sw.getBuffer().toString());
+            Log.i(">>>>>>>>>>className", sw.getBuffer().toString());
+
+        }
+
+
     }
 
     /**
@@ -81,11 +99,14 @@ public class Main implements IXposedHookLoadPackage {
         Context context = application.getApplicationContext();
 
         final String className = application.getClass().getName();
-
-        Alog.d(">>>>>>>>>>className:", className);
+//        Alog.setDebug(true);
+        Alog.i(">>>>>>>>>>className:", className);
+        Log.i(">>>>>>>>>>className:", className);
         if (!"com.alibaba.android.rimet.LauncherApplication".equals(className)) {
             // 不需要处理
-            return;
+            Alog.i(">>>>>>>>>>className1:", className);
+            Log.i(">>>>>>>>>>className1:", className);
+//            return;
         }
 
         XCoreManager coreManager = new CoreManager.Build(context)

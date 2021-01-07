@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.PackageUtil;
 import com.sky.xposed.rimet.BuildConfig;
 import com.sky.xposed.rimet.R;
@@ -99,11 +100,11 @@ public class MainActivity extends Activity {
         switch (view.getId()) {
             case R.id.im_download:
                 // 下载
-                ActivityUtil.openUrl(this, "http://repo.xposed.info/module/com.sky.xposed.rimet");
+                ActivityUtil.openUrl(this, "https://github.com/anysoft/xposed-rimet/releases");
                 break;
             case R.id.im_source:
                 // 源地址
-                ActivityUtil.openUrl(this, "https://github.com/sky-wei/xposed-rimet");
+                ActivityUtil.openUrl(this, "https://github.com/anysoft/xposed-rimet/tree/resurrection");
                 break;
             case R.id.im_document:
                 // 文档地址
@@ -122,11 +123,16 @@ public class MainActivity extends Activity {
     }
 
     private String getVersionName(String packageName) {
-
+        PackageUtil.SimplePackageInfo info = null;
         // 获取版本名
-        PackageUtil.SimplePackageInfo info = PackageUtil
-                .getSimplePackageInfo(this, packageName);
+        try {
+            info = PackageUtil
+                    .getSimplePackageInfo(this, packageName);
 
+
+        } catch (Exception e) {
+            Alog.d("no package", packageName);
+        }
         return info == null ? "Unknown" : "v" + info.getVersionName();
     }
 }

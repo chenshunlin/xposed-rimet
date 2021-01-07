@@ -81,6 +81,7 @@ public class SettingsPlugin extends BaseDingPlugin {
 
         View lineView = new View(activity);
         lineView.setBackgroundColor(0xFFEFEFEF);
+        lineView.setBackgroundColor(view.getDrawingCacheBackgroundColor());//todo
         linearLayout.addView(lineView, new LayoutUtil.Build()
                 .setHeight(2)
                 .linearParams());
