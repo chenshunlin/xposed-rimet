@@ -102,5 +102,25 @@ public interface XConstant {
         String STATION_LAC = "station_lac";
 
         String STATION_CELL_ID = "station_cell_id";
+
+
+        /******  反检测  ******/
+        String ENABLE_ANTI_DETECTION = "enable_anti_detection";
+
+        String ENABLE_ANTI_DOWNGRADE = "enable_anti_downgrade";
+
+        String PACKAGE_VERSION_INFO = "package_version_info";
+
+        String PACKAGE_VERSION_NAME = "package_version_name";
+
+        String PACKAGE_VERSION_CODE = "package_version_code";
+
+        String ENABLE_ANTI_DEVICE = "enable_anti_device";
+        String DEVICE_IMEI = "device_imei";
+        String DEVICE_MANUFACTURER = "device_manufacturer";
+        String DEVICE_MODEL = "device_model";
+        String DEVICE_BRAND = "device_brand";
+        String DEVICE_HARDWARE = "device_hardware";
+
     }
 }

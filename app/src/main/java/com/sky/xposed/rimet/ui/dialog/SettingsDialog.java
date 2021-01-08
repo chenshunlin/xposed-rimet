@@ -66,6 +66,8 @@ public class SettingsDialog extends BasePluginDialog {
     private EditTextItemView sivSettingsWifi;
     private EditTextItemView sivSettingsStation;
 
+    private EditTextItemView settingsAntiDetection;
+
     private XPreferences mPreferences;
 
     @Override
@@ -86,7 +88,7 @@ public class SettingsDialog extends BasePluginDialog {
 
         /*****************   红包   ****************/
         //只有国内版支持红包功能
-        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(getCoreManager().getLoadPackage().getPackageName())){
+        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(getCoreManager().getLoadPackage().getPackageName())) {
             XViewUtil.newTopSortItemView(getContext(), "红包")
                     .addToFrame(frameView);
 
@@ -229,6 +231,27 @@ public class SettingsDialog extends BasePluginDialog {
         });
         sivSettingsStation.trackBind(XConstant.Key.STATION_INFO, "");
         sivSettingsStation.addToFrame(stationGroup);
+
+        /*****************   安全   ****************/
+        XViewUtil.newSortItemView(getContext(), "安全")
+                .addToFrame(frameView);
+        GroupItemView antiDetectionGroup = new GroupItemView(getContext());
+//        antiDetectionGroup.setVisibility(View.GONE);
+
+        antiDetectionGroup.addToFrame(frameView);
+        //anti detection
+        settingsAntiDetection = new EditTextItemView(getContext(), new UAttributeSet.Build()
+                .putInt(UIAttribute.EditTextItem.style, XEditItemView.Style.MULTI_LINE)
+                .build());
+        settingsAntiDetection.setName("反检测");
+        settingsAntiDetection.setExtendHint("设置反钉钉安全扫描选项");
+        settingsAntiDetection.setOnItemClickListener(view -> {
+            AntiDetectionDialog dialog = new AntiDetectionDialog();
+            dialog.show(getActivity());
+        });
+//        settingsAntiDetection.trackBind(XConstant.Key.PACKAGE_VERSION_INFO, "");
+        settingsAntiDetection.addToFrame(antiDetectionGroup);
+
     }
 
     @Override
@@ -247,7 +270,7 @@ public class SettingsDialog extends BasePluginDialog {
             // 进入分析界面
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.setClassName(BuildConfig.APPLICATION_ID, AnalysisActivity.class.getName());
-            intent.putExtra(XConstant.Key.PACKAGE_NAME,getCoreManager().getLoadPackage().getPackageName());
+            intent.putExtra(XConstant.Key.PACKAGE_NAME, getCoreManager().getLoadPackage().getPackageName());
             startActivityForResult(intent, 99);
         });
 
@@ -299,6 +322,7 @@ public class SettingsDialog extends BasePluginDialog {
 
     /**
      * 设置提示消息
+     *
      * @param text
      */
     private void setPromptText(String text) {
@@ -308,6 +332,7 @@ public class SettingsDialog extends BasePluginDialog {
 
     /**
      * 保存位置信息
+     *
      * @param model
      */
     private void saveLocationInfo(LocationModel model) {
@@ -324,6 +349,7 @@ public class SettingsDialog extends BasePluginDialog {
 
     /**
      * 保存基站信息
+     *
      * @param model
      */
     private void saveStationInfo(StationModel model) {
@@ -342,6 +368,7 @@ public class SettingsDialog extends BasePluginDialog {
 
     /**
      * 保存Wifi信息
+     *
      * @param model
      */
     private void saveWifiInfo(WifiModel model) {
@@ -372,11 +399,11 @@ public class SettingsDialog extends BasePluginDialog {
 
         if (CollectionUtil.isEmpty(map)
                 || (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName) && map.size() < 3)
-                || (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName) && map.size() < 2) )
-        if (CollectionUtil.isEmpty(map) || map.size() < 3) {
-            showMessage("无法获取适配的版本信息!");
-            return;
-        }
+                || (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName) && map.size() < 2))
+            if (CollectionUtil.isEmpty(map) || map.size() < 3) {
+                showMessage("无法获取适配的版本信息!");
+                return;
+            }
 
         // 获取当前md5值
         String md5 = FileUtil.getFileMD5(new File(getContext().getApplicationInfo().sourceDir));
@@ -387,19 +414,19 @@ public class SettingsDialog extends BasePluginDialog {
         preferences.putString(toHexString(M.classz.class_defpackage_MessageDs), map.get(M.classz.class_defpackage_MessageDs));
         preferences.putString(toHexString(M.classz.class_defpackage_ServiceFactory), map.get(M.classz.class_defpackage_ServiceFactory));
         //dingtalk lite 不支持 redpacket
-        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)){
+        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)) {
             preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc), map.get(M.classz.class_defpackage_RedPacketsRpc));
             preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc_9), map.get(M.classz.class_defpackage_RedPacketsRpc) + "$9");
         }
 
         DialogUtil.showDialog(getContext(),
                 "提示", "\n适配成功! 重启即可生效,是否马上重启?", (dialog, which) -> {
-            getCoreManager().getLoadPackage().getHandler().postDelayed(() -> {
-                // 退出
-                Process.killProcess(Process.myPid());
-                System.exit(0);
-            }, 300);
-        });
+                    getCoreManager().getLoadPackage().getHandler().postDelayed(() -> {
+                        // 退出
+                        Process.killProcess(Process.myPid());
+                        System.exit(0);
+                    }, 300);
+                });
     }
 
     private String toHexString(int key) {

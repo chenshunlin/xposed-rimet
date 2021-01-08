@@ -20,7 +20,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ToastUtil;
@@ -75,9 +74,8 @@ public class Main implements IXposedHookLoadPackage {
         } catch (Throwable throwable) {
             StringWriter sw = new StringWriter();
             throwable.printStackTrace(new PrintWriter(sw, true));
-            Alog.setDebug(true);
-            Alog.i(">>>>>>>>>>className", sw.getBuffer().toString());
-            Log.i(">>>>>>>>>>className", sw.getBuffer().toString());
+            Alog.setDebug(BuildConfig.DEBUG);
+            Alog.i(this.getClass().getName(), sw.getBuffer().toString());
 
         }
 
@@ -99,15 +97,24 @@ public class Main implements IXposedHookLoadPackage {
         Context context = application.getApplicationContext();
 
         final String className = application.getClass().getName();
-//        Alog.setDebug(true);
-        Alog.i(">>>>>>>>>>className:", className);
-        Log.i(">>>>>>>>>>className:", className);
+        Alog.i(this.getClass().getName(), "handleLoadPackage:" + className);
         if (!"com.alibaba.android.rimet.LauncherApplication".equals(className)) {
             // 不需要处理
-            Alog.i(">>>>>>>>>>className1:", className);
-            Log.i(">>>>>>>>>>className1:", className);
+            Alog.i(this.getClass().getName(), "handleLoadPackage:" + className + " unneed");
 //            return;
         }
+
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "MODEL", "MI 6s Plus");
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "MANUFACTURER", "Xiaomi");
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "BRAND","Xiaomi");
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "PRODUCT","natrium1");
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "SERIAL", "cb16db331");
+
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "HARDWARE", GetCatValue("hardware"));
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "DEVICE", GetCatValue("device"));
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "ID", GetCatValue("id"));
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "DISPLAY", GetCatValue("display"));
+//        XposedHelpers.setStaticObjectField(android.os.Build.class, "FINGERPRINT", GetCatValue("fingerprint"));
 
         XCoreManager coreManager = new CoreManager.Build(context)
                 .setPluginPackageName(BuildConfig.APPLICATION_ID)

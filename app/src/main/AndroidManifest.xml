@@ -34,7 +34,7 @@
         </activity>
 
         <activity android:name=".ui.activity.AnalysisActivity"
-            android:label="解析包">
+            android:label="自动适配">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
