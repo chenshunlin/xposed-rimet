@@ -126,7 +126,7 @@ public class DialogUtil {
         editText.setLayoutParams(LayoutUtil.newViewGroupParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         editText.setSingleLine(true);
-        editText.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(10)});
+        editText.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(15)});
         editText.setHint(contentHint);
         ViewUtil.setInputType(editText, UIConstant.InputType.TEXT);
         frameLayout.addView(editText);

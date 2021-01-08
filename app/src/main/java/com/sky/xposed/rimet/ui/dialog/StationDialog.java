@@ -144,7 +144,6 @@ public class StationDialog extends BasePluginDialog implements
                             showMessage("输入的信息不能为空!");
                             return;
                         }
-
                         // 保存名称
                         getDefaultPreferences().putString(XConstant.Key.LAST_ALIAS, value);
 

@@ -55,7 +55,7 @@ public class AnalysisActivity extends Activity {
         mTvOutInfo.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         mLoadingDialog = new LoadingDialog(this);
-        mLoadingDialog.setTip("处理中...");
+        mLoadingDialog.setTip("分析中...");
 
         AnalysisTask task = new AnalysisTask(getApplicationContext());
         task.setOnPreCallback(() -> mLoadingDialog.show());
