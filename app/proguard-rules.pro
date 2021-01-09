@@ -25,8 +25,8 @@
 
 -dontshrink
 
--keep class com.sky.xposed.rimet.Main {*;}
--keep class com.sky.xposed.rimet.StringFog
+-keep class tk.anysoft.xposed.gossip.Main {*;}
+-keep class tk.anysoft.xposed.gossip.StringFog
 
 -keep class rx.** {*;}
 -keep class org.** {*;}

@@ -19,11 +19,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.sky.xposed.rimet"
+        applicationId "tk.anysoft.xposed.gossip"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 29
-        versionName "1.4.3"
+        versionCode 1
+        versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "armeabi-v7a"//, "arm64-v8a", "x86","arm64-v8a","x86_64"
