@@ -65,8 +65,8 @@ public class AntiDetectionPlugin extends BaseDingPlugin {
                         }
                     }
                 });
-        //android8+ versioncode
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        //android9+ versioncode
+        if (Build.VERSION.SDK_INT >= 28) {
             findMethod(
                     PackageInfo.class,
                     "getLongVersionCode")

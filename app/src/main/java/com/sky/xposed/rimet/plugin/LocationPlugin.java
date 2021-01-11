@@ -16,21 +16,16 @@
 
 package com.sky.xposed.rimet.plugin;
 
-import android.content.Context;
 import android.location.Criteria;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationResult;
 import com.sky.xposed.annotations.APlugin;
 import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.core.interfaces.XCoreManager;
@@ -86,88 +81,88 @@ public class LocationPlugin extends BaseDingPlugin {
                     XConstant.Rimet.PACKAGE_NAME.get(1) + " : location");
 
 
-            findMethod(
-                    com.google.android.gms.location.LocationCallback.class,
-                    "onLocationResult",
-                    LocationResult.class)
-                    .before(param -> {
-                        Log.d("anysoft----------->",
-                                "com.google.android.gms.location.LocationCallback.onLocationResult:"
-                                        + ((LocationResult) param.args[0]).getLastLocation().getLatitude()
-                                        + ((LocationResult) param.args[0]).getLastLocation().getLongitude());
-                    });
-
-
-            findMethod(
-                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
-                    "onConnected", Bundle.class)
-                    .before(param -> {
-                        Log.d("anysoft----------->",
-                                "GoogleLocationClient.onConnected:");
-                    });
-
-            findMethod(
-                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
-                    "onConnectionSuspended", int.class)
-                    .after(param -> {
-                        Log.d("anysoft----------->",
-                                "GoogleLocationClient.onConnectionSuspended:");
-                    });
-
-            findMethod(
-                    GooglePlayServicesUtil.class,
-                    "isGooglePlayServicesAvailable",
-                    Context.class)
-                    .after(param -> {
-                        Log.d("anysoft----------->", "GooglePlayServicesUtil.isGooglePlayServicesAvailable:"
-                                + param.getResult());
-                    });
-
-            findMethod(
-                    FusedLocationProviderClient.class,
-                    "getLastLocation"
-            )
-                    .after(param -> {
-                        Log.d("anysoft----------->", "FusedLocationProviderClient.getLastLocation:"
-                                + param.getResult());
-                    });
-            //com.alibaba.laiwang.xpn
-            findMethod(
-                    "com.alibaba.laiwang.xpn.XpnUtils",
-                    "isSupportMIUIPush",
-                    Context.class
-            )
-                    .after(param -> {
-                        Log.d("anysoft----------->", "XpnUtils.isSupportMIUIPush:"
-                                + param.getResult());
-                    });
-            findMethod(
-                    "com.alibaba.laiwang.xpn.XpnUtils",
-                    "isMIUIPushEnabled",
-                    Context.class
-            )
-                    .after(param -> {
-                        Log.d("anysoft----------->", "XpnUtils.isMIUIPushEnabled:"
-                                + param.getResult());
-                    });
-            findMethod(
-                    "com.alibaba.laiwang.xpn.XpnUtils",
-                    "isSupportHuaweiPush",
-                    Context.class
-            )
-                    .after(param -> {
-                        Log.d("anysoft----------->", "XpnUtils.isSupportHuaweiPush:"
-                                + param.getResult());
-                    });
-            findMethod(
-                    "com.alibaba.laiwang.xpn.XpnUtils",
-                    "isSupportFCM",
-                    Context.class
-            )
-                    .after(param -> {
-                        Log.d("anysoft----------->", "XpnUtils.isSupportFCM:"
-                                + param.getResult());
-                    });
+//            findMethod(
+//                    com.google.android.gms.location.LocationCallback.class,
+//                    "onLocationResult",
+//                    LocationResult.class)
+//                    .before(param -> {
+//                        Log.d("anysoft----------->",
+//                                "com.google.android.gms.location.LocationCallback.onLocationResult:"
+//                                        + ((LocationResult) param.args[0]).getLastLocation().getLatitude()
+//                                        + ((LocationResult) param.args[0]).getLastLocation().getLongitude());
+//                    });
+//
+//
+//            findMethod(
+//                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
+//                    "onConnected", Bundle.class)
+//                    .before(param -> {
+//                        Log.d("anysoft----------->",
+//                                "GoogleLocationClient.onConnected:");
+//                    });
+//
+//            findMethod(
+//                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
+//                    "onConnectionSuspended", int.class)
+//                    .after(param -> {
+//                        Log.d("anysoft----------->",
+//                                "GoogleLocationClient.onConnectionSuspended:");
+//                    });
+//
+//            findMethod(
+//                    GooglePlayServicesUtil.class,
+//                    "isGooglePlayServicesAvailable",
+//                    Context.class)
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "GooglePlayServicesUtil.isGooglePlayServicesAvailable:"
+//                                + param.getResult());
+//                    });
+//
+//            findMethod(
+//                    FusedLocationProviderClient.class,
+//                    "getLastLocation"
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "FusedLocationProviderClient.getLastLocation:"
+//                                + param.getResult());
+//                    });
+//            //com.alibaba.laiwang.xpn
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isSupportMIUIPush",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isSupportMIUIPush:"
+//                                + param.getResult());
+//                    });
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isMIUIPushEnabled",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isMIUIPushEnabled:"
+//                                + param.getResult());
+//                    });
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isSupportHuaweiPush",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isSupportHuaweiPush:"
+//                                + param.getResult());
+//                    });
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isSupportFCM",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isSupportFCM:"
+//                                + param.getResult());
+//                    });
 
 
         }
