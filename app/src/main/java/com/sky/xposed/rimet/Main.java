@@ -53,6 +53,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class Main implements IXposedHookLoadPackage {
 
+
+
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpParam) throws Throwable {
 
@@ -62,15 +64,29 @@ public class Main implements IXposedHookLoadPackage {
         XposedPlus.setDefaultInstance(new XposedPlus.Builder(lpParam)
                 .throwableCallback(new ThrowableAdapter())
                 .build());
+        Alog.i(this.getClass().getName(), String.format("Launch pacakage=%s processName=%s",lpParam.packageName,lpParam.processName));
 
         try {
+            XposedUtil.findMethod(
+                    "com.alibaba.android.dingtalkbase.multidexsupport.DDApplication", "onCreate")
+                    .after(param -> handleLoadPackage(param, lpParam));
+
 //            XposedUtil.findMethod(
-//                    "com.alibaba.android.dingtalkbase.multidexsupport.DDApplication", "onCreate")
-//                    .before(param -> handleLoadPackage(param, lpParam));
+//                    Application.class,
+//                    "attach",
+//                    Context.class)
+//                    .after(param -> handleLoadPackage(param, lpParam));
 
             XposedUtil.findMethod(
                     "com.alibaba.android.rimet.LauncherApplication", "onCreate")
                     .after(param -> handleLoadPackage(param, lpParam));
+
+            XposedUtil.findMethod(
+                    "com.alibaba.android.rimet.biz.SplashActivity", "onResume")
+                    .after(param -> handleLoadPackage(param, lpParam));
+
+
+
         } catch (Throwable throwable) {
             StringWriter sw = new StringWriter();
             throwable.printStackTrace(new PrintWriter(sw, true));
@@ -92,12 +108,11 @@ public class Main implements IXposedHookLoadPackage {
     private void handleLoadPackage(
             XC_MethodHook.MethodHookParam param,
             XC_LoadPackage.LoadPackageParam lpParam) throws Throwable {
-
+        Alog.i(this.getClass().getName(), "handleLoadPackage");
         Application application = (Application) param.thisObject;
         Context context = application.getApplicationContext();
-
         final String className = application.getClass().getName();
-        Alog.i(this.getClass().getName(), "handleLoadPackage:" + className);
+        Alog.i(this.getClass().getName(), String.format("handleLoadPackage: className=%s processName=%s",className,lpParam.processName));
         if (!"com.alibaba.android.rimet.LauncherApplication".equals(className)) {
             // 不需要处理
             Alog.i(this.getClass().getName(), "handleLoadPackage:" + className + " unneed");
@@ -166,7 +181,7 @@ public class Main implements IXposedHookLoadPackage {
                 })
                 .build();
         Alog.setDebug(BuildConfig.DEBUG);
-        Alog.d(this.getClass().getName(), "init");
+        Alog.d(this.getClass().getName(), "hook all init success!");
         // 开始处理加载的包
         coreManager.loadPlugins();
     }
