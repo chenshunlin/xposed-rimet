@@ -77,7 +77,7 @@ public class App extends Application {
 
         // 初始化
         Alog.setDebug(BuildConfig.DEBUG);
-        Alog.d(this.getClass().getName(), "init");
+        Alog.d(this.getClass().getName(), "hook all init success!");
         CoreUtil.init(coreManager);
         DisplayUtil.init(this);
         ToastUtil.getInstance().init(this);
