@@ -50,123 +50,39 @@ public class LocationPlugin extends BaseDingPlugin {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void hook() {
+        Alog.d(this.getClass().getName(), " Loading and init pugin....");
+        /****************  位置信息处理 ******************/
+        //hook provider all gps location will call this function
+        hookGPSProviderStatus();
+
+        //hook basicGPS
+//        hookBasicGPS();
+
+        /****************  位置信息处理 ******************/
+        String packageName = getCoreManager().getLoadPackage().getPackageName();
+        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)) {
+            hookAMap();
+        } else if (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName)) {
+            hookGoogleMap();
+        }
+    }
+
+    /**
+     * hook 标准 gps isProviderEnabled 所有定位都会判断 GPS 开关状态
+     */
+    private void hookGPSProviderStatus() {
         //通用 hook GPS为打开状态
         findMethod(
                 LocationManager.class,
                 "isProviderEnabled", String.class)
                 .before(param -> {
-                    Log.d(">>>>>>>>>>>", "isProviderEnabled:" + param.args[0]);
+                    Alog.d(this.getClass().getName(), String.format("invoke isProviderEnabled arg0=%s", param.args[0]));
                     if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
                         if ("gps".equals(param.args[0])) {
                             param.setResult(true);
                         }
                     }
                 });
-        /****************  位置信息处理 ******************/
-
-        String packageName = getCoreManager().getLoadPackage().getPackageName();
-        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)) {
-            findMethod(
-                    "com.amap.api.location.AMapLocationClient",
-                    "getLastKnownLocation")
-                    .after(param -> param.setResult(getLastKnownLocation(param.getResult())));
-
-            findMethod(
-                    "com.amap.api.location.AMapLocationClient",
-                    "setLocationListener",
-                    "com.amap.api.location.AMapLocationListener")
-                    .before(param -> param.args[0] = proxyLocationListener(param.args[0]));
-        } else if (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName)) {
-            Log.d("anysoft----------->",
-                    XConstant.Rimet.PACKAGE_NAME.get(1) + " : location");
-
-
-//            findMethod(
-//                    com.google.android.gms.location.LocationCallback.class,
-//                    "onLocationResult",
-//                    LocationResult.class)
-//                    .before(param -> {
-//                        Log.d("anysoft----------->",
-//                                "com.google.android.gms.location.LocationCallback.onLocationResult:"
-//                                        + ((LocationResult) param.args[0]).getLastLocation().getLatitude()
-//                                        + ((LocationResult) param.args[0]).getLastLocation().getLongitude());
-//                    });
-//
-//
-//            findMethod(
-//                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
-//                    "onConnected", Bundle.class)
-//                    .before(param -> {
-//                        Log.d("anysoft----------->",
-//                                "GoogleLocationClient.onConnected:");
-//                    });
-//
-//            findMethod(
-//                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
-//                    "onConnectionSuspended", int.class)
-//                    .after(param -> {
-//                        Log.d("anysoft----------->",
-//                                "GoogleLocationClient.onConnectionSuspended:");
-//                    });
-//
-//            findMethod(
-//                    GooglePlayServicesUtil.class,
-//                    "isGooglePlayServicesAvailable",
-//                    Context.class)
-//                    .after(param -> {
-//                        Log.d("anysoft----------->", "GooglePlayServicesUtil.isGooglePlayServicesAvailable:"
-//                                + param.getResult());
-//                    });
-//
-//            findMethod(
-//                    FusedLocationProviderClient.class,
-//                    "getLastLocation"
-//            )
-//                    .after(param -> {
-//                        Log.d("anysoft----------->", "FusedLocationProviderClient.getLastLocation:"
-//                                + param.getResult());
-//                    });
-//            //com.alibaba.laiwang.xpn
-//            findMethod(
-//                    "com.alibaba.laiwang.xpn.XpnUtils",
-//                    "isSupportMIUIPush",
-//                    Context.class
-//            )
-//                    .after(param -> {
-//                        Log.d("anysoft----------->", "XpnUtils.isSupportMIUIPush:"
-//                                + param.getResult());
-//                    });
-//            findMethod(
-//                    "com.alibaba.laiwang.xpn.XpnUtils",
-//                    "isMIUIPushEnabled",
-//                    Context.class
-//            )
-//                    .after(param -> {
-//                        Log.d("anysoft----------->", "XpnUtils.isMIUIPushEnabled:"
-//                                + param.getResult());
-//                    });
-//            findMethod(
-//                    "com.alibaba.laiwang.xpn.XpnUtils",
-//                    "isSupportHuaweiPush",
-//                    Context.class
-//            )
-//                    .after(param -> {
-//                        Log.d("anysoft----------->", "XpnUtils.isSupportHuaweiPush:"
-//                                + param.getResult());
-//                    });
-//            findMethod(
-//                    "com.alibaba.laiwang.xpn.XpnUtils",
-//                    "isSupportFCM",
-//                    Context.class
-//            )
-//                    .after(param -> {
-//                        Log.d("anysoft----------->", "XpnUtils.isSupportFCM:"
-//                                + param.getResult());
-//                    });
-
-
-        }
-
     }
 
     private void hookBasicGPS() {
@@ -236,6 +152,162 @@ public class LocationPlugin extends BaseDingPlugin {
                     l.setLongitude(113.949098);
                     param.setResult(l);
                 });
+    }
+
+    /**
+     * amap sdk hook
+     */
+    private void hookAMap() {
+        //hook amap getLastKnownLocation
+        findMethod(
+                "com.amap.api.location.AMapLocationClient",
+                "getLastKnownLocation")
+                .after(param -> {
+                    Alog.d(this.getClass().getName(), String.format("invoke amap getLastKnownLocation"));
+                    param.setResult(getLastKnownLocation(param.getResult()));
+                });
+        //hook amap setLocationListener
+        findMethod(
+                "com.amap.api.location.AMapLocationClient",
+                "setLocationListener",
+                "com.amap.api.location.AMapLocationListener")
+                .before(param -> {
+                    Alog.d(this.getClass().getName(), String.format("invoke amap AMapLocationListener"));
+                    param.args[0] = proxyLocationListener(param.args[0]);
+                });
+    }
+
+    /**
+     * baidu map sdk hook
+     */
+    private void hookBaiduMap() {
+        findMethod(
+                "com.baidu.location.BDLocation",
+                "getLatitude")
+                .before(param -> {
+                    Alog.d(this.getClass().getName(), String.format("invoke baidu map getLatitude"));
+                    if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
+                        String latitude = getPString(XConstant.Key.LOCATION_LATITUDE);
+
+                        if (!TextUtils.isEmpty(latitude)) {
+                            Random mRandom = new Random();
+                            int number = mRandom.nextInt(15 - 3 + 1) + 3;
+                            param.setResult(Double.parseDouble(latitude) + Double.valueOf(number) / 100000);
+                        }
+                    }
+                });
+        findMethod(
+                "com.baidu.location.BDLocation",
+                "getLongitude")
+                .before(param -> {
+                    Alog.d(this.getClass().getName(), String.format("invoke baidu map getLongitude"));
+                    if (isEnable(XConstant.Key.ENABLE_VIRTUAL_LOCATION)) {
+                        String longitude = getPString(XConstant.Key.LOCATION_LONGITUDE);
+
+                        if (!TextUtils.isEmpty(longitude)) {
+                            Random mRandom = new Random();
+                            int number = mRandom.nextInt(15 - 3 + 1) + 3;
+                            param.setResult(Double.parseDouble(longitude) + Double.valueOf(number) / 100000);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * tencent map sdk hook
+     */
+    private void hookTencentMap() {
+
+    }
+
+    /**
+     * google map sdk hook
+     */
+    private void hookGoogleMap() {
+//        findMethod(
+//                com.google.android.gms.location.LocationCallback.class,
+//                "onLocationResult",
+//                LocationResult.class)
+//                .before(param -> {
+//                    Alog.d(this.getClass().getName(),
+//                            "com.google.android.gms.location.LocationCallback.onLocationResult:"
+//                                    + ((LocationResult) param.args[0]).getLastLocation().getLatitude()
+//                                    + ((LocationResult) param.args[0]).getLastLocation().getLongitude());
+//                });
+//        findMethod(
+//                GooglePlayServicesUtil.class,
+//                "isGooglePlayServicesAvailable",
+//                Context.class)
+//                .after(param -> {
+//                    Alog.d(this.getClass().getName(), "GooglePlayServicesUtil.isGooglePlayServicesAvailable:"
+//                            + param.getResult());
+//                });
+//
+//        findMethod(
+//                FusedLocationProviderClient.class,
+//                "getLastLocation"
+//        )
+//                .after(param -> {
+//                    Alog.d(this.getClass().getName(), "FusedLocationProviderClient.getLastLocation:"
+//                            + param.getResult());
+//                });
+//
+//
+//
+//            findMethod(
+//                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
+//                    "onConnected", Bundle.class)
+//                    .before(param -> {
+//                        Log.d("anysoft----------->",
+//                                "GoogleLocationClient.onConnected:");
+//                    });
+//
+//            findMethod(
+//                    "com.alibaba.android.dingtalkbase.amap.GoogleLocationClient",
+//                    "onConnectionSuspended", int.class)
+//                    .after(param -> {
+//                        Log.d("anysoft----------->",
+//                                "GoogleLocationClient.onConnectionSuspended:");
+//                    });
+//
+//            //com.alibaba.laiwang.xpn
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isSupportMIUIPush",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isSupportMIUIPush:"
+//                                + param.getResult());
+//                    });
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isMIUIPushEnabled",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isMIUIPushEnabled:"
+//                                + param.getResult());
+//                    });
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isSupportHuaweiPush",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isSupportHuaweiPush:"
+//                                + param.getResult());
+//                    });
+//            findMethod(
+//                    "com.alibaba.laiwang.xpn.XpnUtils",
+//                    "isSupportFCM",
+//                    Context.class
+//            )
+//                    .after(param -> {
+//                        Log.d("anysoft----------->", "XpnUtils.isSupportFCM:"
+//                                + param.getResult());
+//                    });
+
     }
 
     private void setGpsStatus(GpsStatus gss) {

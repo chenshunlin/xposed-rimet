@@ -48,7 +48,7 @@ public class LuckyPlugin extends MessagePlugin {
 
     @Override
     public void hook() {
-
+        Alog.d(this.getClass().getName(), " Loading and init pugin....");
         findMethod(
                 M.classz.class_android_dingtalk_redpackets_activities_FestivalRedPacketsPickActivity,
                 M.method.method_android_dingtalk_redpackets_activities_FestivalRedPacketsPickActivity_initView)

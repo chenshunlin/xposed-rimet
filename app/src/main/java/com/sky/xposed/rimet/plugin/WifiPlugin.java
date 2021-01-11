@@ -50,7 +50,7 @@ public class WifiPlugin extends BaseDingPlugin {
 
     @Override
     public void hook() {
-
+        Alog.d(this.getClass().getName(), " Loading and init pugin....");
         findMethod(WifiManager.class, "isWifiEnabled")
                 .before(param -> {
                     if (isEnable(XConstant.Key.ENABLE_VIRTUAL_WIFI)) {

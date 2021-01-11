@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.sky.xposed.annotations.APlugin;
+import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ResourceUtil;
 import com.sky.xposed.core.interfaces.XCoreManager;
 import com.sky.xposed.rimet.BuildConfig;
@@ -44,7 +45,7 @@ public class SettingsPlugin extends BaseDingPlugin {
 
     @Override
     public void hook() {
-
+        Alog.d(this.getClass().getName(), " Loading and init pugin....");
         findMethod(
                 "com.alibaba.android.user.settings.activity.NewSettingActivity",
                 "onCreate",

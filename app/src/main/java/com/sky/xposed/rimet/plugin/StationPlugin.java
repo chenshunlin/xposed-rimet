@@ -41,7 +41,7 @@ public class StationPlugin extends BaseDingPlugin {
 
     @Override
     public void hook() {
-
+        Alog.d(this.getClass().getName(), " Loading and init pugin....");
         findMethod(TelephonyManager.class, "getCellLocation")
                 .before(this::handlerGetCellLocation);
     }
