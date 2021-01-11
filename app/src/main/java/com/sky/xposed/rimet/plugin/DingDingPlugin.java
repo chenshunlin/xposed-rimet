@@ -19,6 +19,7 @@ package com.sky.xposed.rimet.plugin;
 import android.content.Context;
 
 import com.sky.xposed.annotations.APlugin;
+import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.core.interfaces.XCoreManager;
 import com.sky.xposed.rimet.data.M;
 import com.sky.xposed.rimet.event.MessageEvent;
@@ -38,7 +39,7 @@ public class DingDingPlugin extends BaseDingPlugin {
 
     @Override
     public void hook() {
-
+        Alog.d(this.getClass().getName(), " Loading and init pugin....");
         if (!isOpenHook()) return;
 
         findMethod(

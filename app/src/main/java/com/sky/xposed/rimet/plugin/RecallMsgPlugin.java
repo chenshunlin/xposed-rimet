@@ -45,7 +45,7 @@ public class RecallMsgPlugin extends MessagePlugin {
 
     @Override
     public void hook() {
-
+        Alog.d(this.getClass().getName(), " Loading and init pugin....");
         if (!isOpenHook()) return;
 
         findMethod(
