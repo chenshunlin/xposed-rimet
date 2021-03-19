@@ -19,7 +19,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.sky.xposed.rimet"
+        applicationId "com.github.assistantor.ding"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 31

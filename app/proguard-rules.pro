@@ -25,8 +25,8 @@
 
 -dontshrink
 
--keep class com.sky.xposed.rimet.Main {*;}
--keep class com.sky.xposed.rimet.StringFog
+-keep class com.github.assistantor.ding.Main {*;}
+-keep class com.github.assistantor.ding.StringFog
 
 -keep class rx.** {*;}
 -keep class org.** {*;}
