@@ -60,10 +60,10 @@ public class LocationPlugin extends BaseDingPlugin {
 
         /****************  位置信息处理 ******************/
         String packageName = getCoreManager().getLoadPackage().getPackageName();
-        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)) {
-            hookAMap();
-        } else if (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName)) {
+        if (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName)) {
             hookGoogleMap();
+        } else {
+            hookAMap();
         }
     }
 

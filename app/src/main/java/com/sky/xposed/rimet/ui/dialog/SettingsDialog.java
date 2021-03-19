@@ -88,7 +88,7 @@ public class SettingsDialog extends BasePluginDialog {
 
         /*****************   红包   ****************/
         //只有国内版支持红包功能
-        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(getCoreManager().getLoadPackage().getPackageName())) {
+        if (!XConstant.Rimet.PACKAGE_NAME.get(1).equals(getCoreManager().getLoadPackage().getPackageName())) {
             XViewUtil.newTopSortItemView(getContext(), "红包")
                     .addToFrame(frameView);
 
@@ -236,7 +236,7 @@ public class SettingsDialog extends BasePluginDialog {
         XViewUtil.newSortItemView(getContext(), "安全")
                 .addToFrame(frameView);
         GroupItemView antiDetectionGroup = new GroupItemView(getContext());
-//        antiDetectionGroup.setVisibility(View.GONE);
+        antiDetectionGroup.setVisibility(View.GONE);
 
         antiDetectionGroup.addToFrame(frameView);
         //anti detection
@@ -398,7 +398,7 @@ public class SettingsDialog extends BasePluginDialog {
 
 
         if (CollectionUtil.isEmpty(map)
-                || (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName) && map.size() < 3)
+                || (!XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName) && map.size() < 3)
                 || (XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName) && map.size() < 2))
             if (CollectionUtil.isEmpty(map) || map.size() < 3) {
                 showMessage("无法获取适配的版本信息!");
@@ -414,7 +414,7 @@ public class SettingsDialog extends BasePluginDialog {
         preferences.putString(toHexString(M.classz.class_defpackage_MessageDs), map.get(M.classz.class_defpackage_MessageDs));
         preferences.putString(toHexString(M.classz.class_defpackage_ServiceFactory), map.get(M.classz.class_defpackage_ServiceFactory));
         //dingtalk lite 不支持 redpacket
-        if (XConstant.Rimet.PACKAGE_NAME.get(0).equals(packageName)) {
+        if (!XConstant.Rimet.PACKAGE_NAME.get(1).equals(packageName)) {
             preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc), map.get(M.classz.class_defpackage_RedPacketsRpc));
             preferences.putString(toHexString(M.classz.class_defpackage_RedPacketsRpc_9), map.get(M.classz.class_defpackage_RedPacketsRpc) + "$9");
         }

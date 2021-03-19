@@ -83,8 +83,9 @@ public class RecallMsgPlugin extends MessagePlugin {
 
         int msgType = getMsgType(message);
 
-//        Alog.d(">>>>>>>>>>>>>>>>> MsgType " + msgType);
+        Alog.d(this.getClass().getName(), String.format("message id=%s msgType=%s",cid, msgType));
 
+        //todo 可能除了126 还有其他类型是撤回
         if (126 == msgType) {
             // 处理撤回消息
             handlerRecallMessage(cid, message);
@@ -112,6 +113,7 @@ public class RecallMsgPlugin extends MessagePlugin {
         int msgType = getMsgType(recallMessage);
 
         if (10 != msgType) return;  // 只处理文本消息
+        //todo 针对其他类型也处理
 
         try {
             Class classIMDatabase = findClass(M.classz.class_wukong_im_base_IMDatabase);
@@ -126,7 +128,9 @@ public class RecallMsgPlugin extends MessagePlugin {
             setMsgText(recallMessage, getMsgText(recallMessage) + " [已撤回]");
 
             // 更新消息信息
-            methodMessageUpdate.invoke(null, dbName, cid, Collections.singletonList(recallMessage));
+            //todo 可能更新失败，获取结果后判断
+            Boolean result = (Boolean) methodMessageUpdate.invoke(null, dbName, cid, Collections.singletonList(recallMessage));
+            Alog.d(this.getClass().getName(),String.format("message result=%b  cid=%s  dbName=%s",result,cid,dbName));
         } catch (Throwable tr) {
             Alog.e("异常了", tr);
         }

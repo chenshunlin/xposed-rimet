@@ -20,6 +20,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ToastUtil;
@@ -46,6 +47,7 @@ import java.util.List;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
@@ -118,6 +120,10 @@ public class Main implements IXposedHookLoadPackage {
             Alog.i(this.getClass().getName(), "handleLoadPackage:" + className + " unneed");
 //            return;
         }
+
+
+
+
 
 //        XposedHelpers.setStaticObjectField(android.os.Build.class, "MODEL", "MI 6s Plus");
 //        XposedHelpers.setStaticObjectField(android.os.Build.class, "MANUFACTURER", "Xiaomi");
