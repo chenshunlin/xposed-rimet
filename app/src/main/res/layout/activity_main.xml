@@ -47,7 +47,7 @@
             app:sky_itemMenuLine="false"
             app:sky_itemMenuTextSize="15sp"
             app:sky_itemMenuShowMore="false"
-            app:sky_itemMenuName="钉钉版本"
+            app:sky_itemMenuName="版本"
             android:background="@drawable/selector_item_menu"
             />
 
@@ -59,7 +59,7 @@
             app:sky_itemMenuLine="false"
             app:sky_itemMenuTextSize="15sp"
             app:sky_itemMenuShowMore="false"
-            app:sky_itemMenuName="钉钉Lite版本"
+            app:sky_itemMenuName="Lite版本"
             android:background="@drawable/selector_item_menu"
             />
 

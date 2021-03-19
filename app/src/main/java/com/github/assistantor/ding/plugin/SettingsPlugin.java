@@ -72,7 +72,7 @@ public class SettingsPlugin extends BaseDingPlugin {
         SimpleItemView itemView = new SimpleItemView(activity);
         itemView.setMinimumHeight(DisplayUtil.DIP_55);
         itemView.getNameView().setTextSize(16);
-        itemView.setName("钉钉助手");
+        itemView.setName("助手");
         itemView.setExtend("v" + BuildConfig.VERSION_NAME);
         itemView.setOnClickListener(v -> {
             // 打开设置

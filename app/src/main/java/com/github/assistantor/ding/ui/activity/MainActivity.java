@@ -66,8 +66,8 @@ public class MainActivity extends Activity {
 //        XVersionManager versionManager = CoreUtil.getCoreManager().getVersionManager();
 
         StringBuilder builder = new StringBuilder();
-        builder.append("配置入口: 钉钉->我的->设置->钉钉助手");
-        builder.append("\n注: 只有Xposed功能生效,才会在设置中显示钉钉助手");
+        builder.append("配置入口: 钉钉->我的->设置->助手");
+        builder.append("\n注: 只有Xposed功能生效,才会在设置中显示助手");
         builder.append("\n\n适配的版本: \n当出现版本不适配时,根据助手中的提示可以自动适配\n");
 //        builder.append(versionManager.getSupportVersion());
 

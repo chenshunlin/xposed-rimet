@@ -43,7 +43,7 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="3e8b7afb696dbead493fbbdcb75047c9"/>
+            android:value="d69e8ad9c6cb3995dd122f90931d9644"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -57,7 +57,7 @@
 
         <meta-data
             android:name="xposeddescription"
-            android:value="钉钉工具"/>
+            android:value="assistantor"/>
 
         <meta-data
             android:name="xposedminversion"

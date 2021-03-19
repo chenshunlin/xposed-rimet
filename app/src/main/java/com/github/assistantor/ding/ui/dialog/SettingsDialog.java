@@ -244,7 +244,7 @@ public class SettingsDialog extends BasePluginDialog {
                 .putInt(UIAttribute.EditTextItem.style, XEditItemView.Style.MULTI_LINE)
                 .build());
         settingsAntiDetection.setName("反检测");
-        settingsAntiDetection.setExtendHint("设置反钉钉安全扫描选项");
+        settingsAntiDetection.setExtendHint("设置反安全扫描选项");
         settingsAntiDetection.setOnItemClickListener(view -> {
             AntiDetectionDialog dialog = new AntiDetectionDialog();
             dialog.show(getActivity());
@@ -263,7 +263,7 @@ public class SettingsDialog extends BasePluginDialog {
         getTitleView().setElevation(DisplayUtil.DIP_4);
 
         showBack();
-        setTitle("钉钉助手");
+        setTitle("助手");
         showMoreMenu();
 
         tvPrompt.setOnClickListener(v -> {
