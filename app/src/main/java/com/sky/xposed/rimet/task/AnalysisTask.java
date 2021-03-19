@@ -110,7 +110,7 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
 
             handlerClass(className, packageName);
 
-            if ((packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(0)) && mStringMap.size() >= 3) //rimet
+            if ((!packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(1)) && mStringMap.size() >= 3) //rimet
                     || (packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(1)) && mStringMap.size() >= 2)) {//ding lite
                 // 不需要处理了
                 Alog.d(">>>>>>>>>>>>>>> 不需要处理了");
@@ -150,7 +150,7 @@ public class AnalysisTask extends AbstractTask<String, String, Map<Integer, Stri
         if (Object.class.equals(superClass) && handlerServiceFactoryClass(tClass)) {
             Alog.d(">>>>>>>>>>>>>>>>>>>> ServiceFactory " + tClass);
             mStringMap.put(M.classz.class_defpackage_ServiceFactory, tClass.getName());
-        } else if (Object.class.equals(superClass) && packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(0)) && handlerRedPacketsClass(tClass)) {
+        } else if (Object.class.equals(superClass) && !packageName.equals(XConstant.Rimet.PACKAGE_NAME.get(1)) && handlerRedPacketsClass(tClass)) {
             Alog.d(">>>>>>>>>>>>>>>>>>>> RedPackets " + tClass);
             mStringMap.put(M.classz.class_defpackage_RedPacketsRpc, tClass.getName());
         } else if (superClass == mDatabaseClass && handlerDatabaseClass(tClass)) {

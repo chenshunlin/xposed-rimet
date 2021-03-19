@@ -20,12 +20,15 @@ import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.sky.xposed.annotations.APlugin;
 import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.core.interfaces.XCoreManager;
 import com.sky.xposed.rimet.XConstant;
 import com.sky.xposed.rimet.plugin.base.BaseDingPlugin;
+
+import de.robv.android.xposed.XposedHelpers;
 
 /**
  * Created by anysoft on 2020/12/19.
@@ -113,5 +116,13 @@ public class AntiDetectionPlugin extends BaseDingPlugin {
 //   String brand = android.os.Build.BRAND;获取手机品牌。 xiaomi
 // String carrier= android.os.Build.MANUFACTURER;
 
+        try {
+            XposedHelpers.setStaticObjectField(Class.forName("com.alibaba.android.rimet.BuildConfig").getClass(), "VERSION_NAME", "5.1.41");
+            XposedHelpers.setStaticObjectField(Class.forName("com.alibaba.android.rimet.BuildConfig"), "VERSION_CODE", 726);
+            XposedHelpers.setStaticObjectField(Class.forName("com.alibaba.android.rimet.BuildConfig"), "BUILD_ID", "14368995");
+        } catch (ClassNotFoundException e) {
+            Log.i("Launch pacakage","Launch pacakage");
+            e.printStackTrace();
+        }
     }
 }

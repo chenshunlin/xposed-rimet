@@ -32,7 +32,9 @@ public interface XConstant {
     interface Rimet {
         List<String> PACKAGE_NAME = Arrays.asList(
                 "com.alibaba.android.rimet",//钉钉
-                "com.alibaba.dingtalk.global"//钉钉 lite 国际版
+                "com.alibaba.dingtalk.global",//钉钉 lite 国际版
+                "com.alibaba.taurus.zhejiang",//浙政钉
+                "com.gsww.gs_zwfw_android"//陇政钉
         );
     }
 
