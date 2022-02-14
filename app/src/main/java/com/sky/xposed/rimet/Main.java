@@ -170,6 +170,8 @@ public class Main implements IXposedHookLoadPackage {
                     public void onInitComplete(XCoreManager coreManager) {
                         super.onInitComplete(coreManager);
 
+                        Alog.setDebug(BuildConfig.DEBUG);
+
                         final Context context = coreManager.getLoadPackage().getContext();
 
                         // 保存当前版本MD5信息
