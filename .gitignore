@@ -12,4 +12,5 @@
 /captures
 .externalNativeBuild
 .idea
-/keyStore/anysoft.jks
+/keyStore/*
+/app/plugin/
