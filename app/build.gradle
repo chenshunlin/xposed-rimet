@@ -22,8 +22,8 @@ android {
         applicationId "com.github.assistantor.ding"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 27
-        versionName "1.4.1"
+        versionCode 31
+        versionName "1.4.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "armeabi-v7a"//, "arm64-v8a", "x86","arm64-v8a","x86_64"

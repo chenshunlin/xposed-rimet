@@ -122,7 +122,11 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
         mAMap.setOnCameraChangeListener(new MyOnCameraChangeListener());
         mAMap.setOnMapLoadedListener(new MyOnMapLoadedListener());
 
-        mGeocodeSearch = new GeocodeSearch(getApplicationContext());
+        try {
+            mGeocodeSearch = new GeocodeSearch(getApplicationContext());
+        } catch (AMapException e) {
+            e.printStackTrace();
+        }
         mGeocodeSearch.setOnGeocodeSearchListener(new MyOnGeocodeSearchListener());
 
         // 请求权限
@@ -224,7 +228,13 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
 
         if (mAMapLocationClient == null) {
 
-            mAMapLocationClient = new AMapLocationClient(getApplicationContext());
+            try {
+                AMapLocationClient.updatePrivacyShow(getApplicationContext(),true,true);
+                AMapLocationClient.updatePrivacyAgree(getApplicationContext(),true);
+                mAMapLocationClient = new AMapLocationClient(getApplicationContext());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             mAMapLocationClientOption = new AMapLocationClientOption();
 
             // 设置定位参数,只定位一次
@@ -335,7 +345,7 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
      * 搜索Poi信息
      * @param keyWord
      */
-    private void doSearchQuery(String keyWord) {
+    private void doSearchQuery(String keyWord) throws AMapException {
 
         mQuery = new PoiSearch.Query(keyWord, "", "");
         mQuery.setPageSize(20);

@@ -16,6 +16,8 @@
 
 package com.github.assistantor.ding.ui.util;
 
+import static android.widget.Toast.LENGTH_LONG;
+
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -32,7 +34,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.amap.api.services.core.AMapException;
 import com.sky.xposed.common.util.Alog;
 import com.sky.xposed.common.util.ToastUtil;
 import com.github.assistantor.ding.BuildConfig;
@@ -171,7 +175,11 @@ public class DialogUtil {
         builder.setView(frameLayout);
         builder.setPositiveButton("搜索", (dialog, which) -> {
             // 返回文本的内容
-            listener.onSearch(editText.getText().toString());
+            try {
+                listener.onSearch(editText.getText().toString());
+            } catch (AMapException e) {
+                ToastUtil.show(e.getMessage(),LENGTH_LONG);
+            }
         });
         builder.setNegativeButton("取消", null);
         builder.show();
@@ -242,6 +250,6 @@ public class DialogUtil {
 
     public interface OnSearchListener {
 
-        void onSearch(String keyWord);
+        void onSearch(String keyWord) throws AMapException;
     }
 }
