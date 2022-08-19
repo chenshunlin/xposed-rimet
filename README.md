@@ -69,10 +69,10 @@
 ### mt默认签名应用(testkey签名)
 - 测试key SHA1: 61:ED:37:7E:85:D3:86:A8:DF:EE:6B:86:4B:D8:5B:0B:FA:A5:AF:81
 修改包名、修改高德key、重新签名 可以参考此视频
-- [修改包名、修改高德key、重新签名](./screenshot/modifykey.mp4)
+- [修改包名、修改高德key、重新签名](./screenshot/mt.mp4)
 
 <video id="video" controls="" preload="none" poster="作者(图片地址)">
-<source id="mp4" src="./screenshot/modifykey.mp4" type="video/mp4">
+<source id="mp4" src="./screenshot/mt.mp4" type="video/mp4">
 </video>
 
 
