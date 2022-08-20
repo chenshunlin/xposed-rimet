@@ -178,7 +178,7 @@ public class DialogUtil {
             try {
                 listener.onSearch(editText.getText().toString());
             } catch (AMapException e) {
-                ToastUtil.show(e.getMessage(),LENGTH_LONG);
+                Alog.e(DialogUtil.class.getName(),e.getMessage());
             }
         });
         builder.setNegativeButton("取消", null);

@@ -17,6 +17,20 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file("${rootDir}/keyStore/anysoft.jks")
+            storePassword project.storePassword
+            keyAlias project.keyAlias
+            keyPassword project.keyPassword
+        }
+        debug {
+            storeFile file("${rootDir}/keyStore/anysoft.jks")
+            storePassword project.storePassword
+            keyAlias project.keyAlias
+            keyPassword project.keyPassword
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.github.assistantor.ding"
@@ -41,10 +55,19 @@ android {
                 }
             }
             minifyEnabled true // 已开源
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled false
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "${project.name}_${variant.flavorName}_v${variant.versionName}.apk"
+                }
+            }
+            minifyEnabled true
+            signingConfig signingConfigs.debug
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
         }
     }
 

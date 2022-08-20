@@ -97,44 +97,43 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_map);
-
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-
-        mMapView = findViewById(R.id.map_view);
-        mMapView.onCreate(savedInstanceState);
-
-        mListView = findViewById(R.id.list_view);
-        mTvPrompt = findViewById(R.id.tv_prompt);
-        mSearchResultAdapter = new SearchResultAdapter(this);
-        mListView.setAdapter(mSearchResultAdapter);
-        mListView.setOnItemClickListener(this);
-
-        mAMap = mMapView.getMap();
-
-        mAMap.getUiSettings().setZoomControlsEnabled(false);
-        mAMap.setLocationSource(this);
-        mAMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mAMap.setMyLocationEnabled(true);
-
-        mAMap.setOnCameraChangeListener(new MyOnCameraChangeListener());
-        mAMap.setOnMapLoadedListener(new MyOnMapLoadedListener());
-
         try {
-            mGeocodeSearch = new GeocodeSearch(getApplicationContext());
-        } catch (AMapException e) {
-            e.printStackTrace();
-        }
-        mGeocodeSearch.setOnGeocodeSearchListener(new MyOnGeocodeSearchListener());
+            setContentView(R.layout.activity_map);
 
-        // 请求权限
-        PermissionUtil.requestPermissions(this,
-                new String[] {
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_FINE_LOCATION},
-                99);
+            ActionBar actionBar = getActionBar();
+            if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
+            mMapView = findViewById(R.id.map_view);
+            mMapView.onCreate(savedInstanceState);
+
+            mListView = findViewById(R.id.list_view);
+            mTvPrompt = findViewById(R.id.tv_prompt);
+            mSearchResultAdapter = new SearchResultAdapter(this);
+            mListView.setAdapter(mSearchResultAdapter);
+            mListView.setOnItemClickListener(this);
+
+            mAMap = mMapView.getMap();
+
+            mAMap.getUiSettings().setZoomControlsEnabled(false);
+            mAMap.setLocationSource(this);
+            mAMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mAMap.setMyLocationEnabled(true);
+
+            mAMap.setOnCameraChangeListener(new MyOnCameraChangeListener());
+            mAMap.setOnMapLoadedListener(new MyOnMapLoadedListener());
+            mGeocodeSearch = new GeocodeSearch(getApplicationContext());
+            mGeocodeSearch.setOnGeocodeSearchListener(new MyOnGeocodeSearchListener());
+
+            // 请求权限
+            PermissionUtil.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    99);
+        } catch (AMapException e) {
+            Alog.e(this.getClass().getName(), e.getMessage());
+        }
+
     }
 
     @Override
@@ -187,7 +186,7 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
         super.onDestroy();
         mMapView.onDestroy();
 
-        if(null != mAMapLocationClient){
+        if (null != mAMapLocationClient) {
             mAMapLocationClient.onDestroy();
         }
     }
@@ -229,8 +228,8 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
         if (mAMapLocationClient == null) {
 
             try {
-                AMapLocationClient.updatePrivacyShow(getApplicationContext(),true,true);
-                AMapLocationClient.updatePrivacyAgree(getApplicationContext(),true);
+                AMapLocationClient.updatePrivacyShow(getApplicationContext(), true, true);
+                AMapLocationClient.updatePrivacyAgree(getApplicationContext(), true);
                 mAMapLocationClient = new AMapLocationClient(getApplicationContext());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -311,7 +310,7 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
         LatLng latLng = mAMap.getCameraPosition().target;
         Point screenPosition = mAMap.getProjection().toScreenLocation(latLng);
         mLocationMarker = mAMap.addMarker(new MarkerOptions()
-                .anchor(0.5f,0.5f)
+                .anchor(0.5f, 0.5f)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.purple_pin)));
 
         //设置Marker在屏幕上,不跟随地图移动
@@ -336,24 +335,28 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
 
         // 根据屏幕距离计算需要移动的目标点
         LatLng latLng = mAMap.getCameraPosition().target;
-        Point screenPosition =  mAMap.getProjection().toScreenLocation(latLng);
+        Point screenPosition = mAMap.getProjection().toScreenLocation(latLng);
 
         mLocationMarker.setPositionByPixels(screenPosition.x, screenPosition.y);
     }
 
     /**
      * 搜索Poi信息
+     *
      * @param keyWord
      */
-    private void doSearchQuery(String keyWord) throws AMapException {
+    private void doSearchQuery(String keyWord) {
+        try {
+            mQuery = new PoiSearch.Query(keyWord, "", "");
+            mQuery.setPageSize(20);
+            mQuery.setPageNum(0);
 
-        mQuery = new PoiSearch.Query(keyWord, "", "");
-        mQuery.setPageSize(20);
-        mQuery.setPageNum(0);
-
-        mPoiSearch = new PoiSearch(this, mQuery);
-        mPoiSearch.setOnPoiSearchListener(new MyOnPoiSearchListener());
-        mPoiSearch.searchPOIAsyn();
+            mPoiSearch = new PoiSearch(this, mQuery);
+            mPoiSearch.setOnPoiSearchListener(new MyOnPoiSearchListener());
+            mPoiSearch.searchPOIAsyn();
+        } catch (AMapException e) {
+            Alog.e(this.getClass().getName(), e.getMessage());
+        }
     }
 
     /**
@@ -363,7 +366,6 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
 
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
-
             if (mOnLocationChangedListener == null || mAMapLocationClient == null
                     || aMapLocation == null || aMapLocation.getErrorCode() != 0) {
                 // 定位失败了
@@ -381,7 +383,7 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
             if (mCurMarker == null) {
                 // 设置当前位置
                 mCurMarker = mAMap.addMarker(new MarkerOptions()
-                        .anchor(0.5f,0.5f)
+                        .anchor(0.5f, 0.5f)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker)));
             }
 
@@ -428,7 +430,6 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
 
         @Override
         public void onRegeocodeSearched(RegeocodeResult result, int resultCode) {
-
             if (resultCode != AMapException.CODE_AMAP_SUCCESS) {
                 Alog.e("搜索出错了");
                 return;
@@ -458,6 +459,8 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
             mSearchResultAdapter.setSelectedPosition(0);
             mSearchResultAdapter.setItems(tmpList);
             mSearchResultAdapter.notifyDataSetChanged();
+            doSearchQuery(regeocodeAddress.getFormatAddress());
+
         }
 
         @Override
@@ -473,7 +476,6 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
 
         @Override
         public void onPoiSearched(PoiResult poiResult, int resultCode) {
-
             if (resultCode != AMapException.CODE_AMAP_SUCCESS) {
                 Alog.e("搜索出错了");
                 return;
