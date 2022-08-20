@@ -458,6 +458,7 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
             mSearchResultAdapter.setSelectedPosition(0);
             mSearchResultAdapter.setItems(tmpList);
             mSearchResultAdapter.notifyDataSetChanged();
+            doSearchQuery(regeocodeAddress.getFormatAddress());
         }
 
         @Override
