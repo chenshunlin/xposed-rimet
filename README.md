@@ -43,6 +43,7 @@
 
 
 ## 如何使用自己的高德key？
+(以下部分不支持`太极APP`，因为它的插件需要开发者上传并审核保持签名一致才行。所以如有需求请使用`应用转生`、`LSPatch`、`JSHOOK`等其他虚拟框架)
 
 助手采用的高德地图定位插件，由于国家[个人信息保护法](https://lbs.amap.com/pages/privacy/) 实施，高德隐私声明要求必须升级SDK，以及规范使用key，故望各位都使用自己的高德key，本月度过后本分支下key会删除，望周知。
 自定义修改高德key的几个步骤：
@@ -78,7 +79,8 @@
   
   - 修改高德key
   - 重新签名 
-  - 可以参考此视频  [修改包名、修改高德key、重新签名](./screenshot/mt.mp4)
+  - 可以参考此视频  [修改高德key、重新签名](./screenshot/replaceKeyAndSign.mp4) 
+  - 可以参考此视频  [修改高德key、修改包名、重新签名](./screenshot/modifypackageandkey.mp4)
   
 
 <video id="video" controls="" preload="none" poster="作者(图片地址)">
