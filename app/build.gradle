@@ -17,13 +17,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.sky.xposed.rimet"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 27
-        versionName "1.4.1"
+        versionCode 30
+        versionName "1.4.4.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "armeabi-v7a"//, "arm64-v8a", "x86","arm64-v8a","x86_64"
@@ -56,7 +56,6 @@ android {
             }
             minifyEnabled true // 已开源
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.sky
         }
         debug {
             applicationVariants.all { variant ->
@@ -65,7 +64,6 @@ android {
                 }
             }
             minifyEnabled false
-            signingConfig signingConfigs.sky
         }
     }
 
@@ -111,6 +109,6 @@ dependencies {
     compileOnly 'com.rover12421.AndroidHideApi:android:1.17'
     demoImplementation 'org.apache.commons:commons-lang3:3.7'
     annotationProcessor 'com.github.sky-wei.xposed-frame:compiler:1.1.1'
-    implementation 'com.google.android.gms:play-services-maps:12.0.1'
+//    implementation 'com.google.android.gms:play-services-maps:12.0.1'
 //    implementation 'com.google.maps.android:android-maps-utils:2.2.0'//    地图操作工具类，添加标记等
 }

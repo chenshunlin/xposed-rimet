@@ -21,6 +21,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -152,7 +153,7 @@ public class LocationDialog extends BasePluginDialog implements
             ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             // 将文本内容放到系统剪贴板里。
             CharSequence models = cm.getText();
-            if (null != models) {
+            if (!TextUtils.isEmpty(models)) {
                 JsonArray array = new JsonParser().parse(models.toString()).getAsJsonArray();
                 for (final JsonElement elem : array) {
                     LocationModel tmpModel = new Gson().fromJson(elem, LocationModel.class);

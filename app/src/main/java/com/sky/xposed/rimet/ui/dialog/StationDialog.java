@@ -167,7 +167,7 @@ public class StationDialog extends BasePluginDialog implements
             ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             // 将文本内容放到系统剪贴板里。
             CharSequence models = cm.getText();
-            if (null != models) {
+            if (!TextUtils.isEmpty(models)) {
                 JsonArray array = new JsonParser().parse(models.toString()).getAsJsonArray();
                 for (final JsonElement elem : array) {
                     StationModel tmpModel = new Gson().fromJson(elem, StationModel.class);
