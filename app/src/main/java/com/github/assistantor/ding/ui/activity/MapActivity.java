@@ -323,6 +323,7 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
         if (mSearchLatLonPoint == null) return;
 
         RegeocodeQuery query = new RegeocodeQuery(mSearchLatLonPoint, 2000, GeocodeSearch.AMAP);
+        query.setExtensions(PoiSearch.EXTENSIONS_ALL);
         mGeocodeSearch.getFromLocationAsyn(query);
     }
 
@@ -348,7 +349,8 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
     private void doSearchQuery(String keyWord) {
         try {
             mQuery = new PoiSearch.Query(keyWord, "", "");
-            mQuery.setPageSize(20);
+            mQuery.setExtensions(PoiSearch.EXTENSIONS_ALL);
+            mQuery.setPageSize(50);
             mQuery.setPageNum(0);
 
             mPoiSearch = new PoiSearch(this, mQuery);
@@ -459,8 +461,6 @@ public class MapActivity extends Activity implements LocationSource, AdapterView
             mSearchResultAdapter.setSelectedPosition(0);
             mSearchResultAdapter.setItems(tmpList);
             mSearchResultAdapter.notifyDataSetChanged();
-            doSearchQuery(regeocodeAddress.getFormatAddress());
-
         }
 
         @Override
