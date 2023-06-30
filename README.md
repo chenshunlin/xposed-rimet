@@ -64,7 +64,7 @@
 ![](./screenshot/addapp2.png)
 
 *复制key*
-![](./screenshot/addapp2.png)
+![](./screenshot/addapp3.png)
 
 ### mt管理器修改应用内key
 ### mt默认签名应用(testkey签名)
