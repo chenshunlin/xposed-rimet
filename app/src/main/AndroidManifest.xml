@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sky.xposed.rimet">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="tk.anysoft.xposed.lark">
 
     <application
         android:name=".App"
@@ -32,19 +33,22 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="3e8b7afb696dbead493fbbdcb75047c9" />
+            android:value="032c5ee59a67360336aa822806961cdf" />
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="钉钉工具" />
+            android:value="飞书工具" />
         <meta-data
             android:name="xposedminversion"
             android:value="54" />
 
         <service android:name="com.amap.api.location.APSService" />
     </application>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
