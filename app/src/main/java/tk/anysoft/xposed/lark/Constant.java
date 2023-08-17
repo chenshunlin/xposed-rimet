@@ -32,7 +32,7 @@ public interface Constant {
     interface Rimet {
 
         String PACKAGE_NAME = "com.larksuite.suite";
-        List<String> PACKAGES_NAME = Arrays.asList(
+        List<String> PACKAGE_NAMES = Arrays.asList(
                 "com.ss.android.lark",
                 "com.larksuite.suite"
         );

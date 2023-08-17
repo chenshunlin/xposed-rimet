@@ -38,6 +38,7 @@ import tk.anysoft.xposed.lark.ui.dialog.LoveDialog;
 import tk.anysoft.xposed.lark.ui.util.ActivityUtil;
 import tk.anysoft.xposed.lark.ui.util.DialogUtil;
 
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends Activity {
@@ -55,7 +56,7 @@ public class MainActivity extends Activity {
         TextView tvSupportVersion = findViewById(R.id.tv_support_version);
 
         imVersion.setDesc("v" + BuildConfig.VERSION_NAME);
-        imDingVersion.setDesc(getDingVersionName());
+        imDingVersion.setDesc(getDingVersionNames(Constant.Rimet.PACKAGE_NAMES));
 
         XVersionManager mVersionManager = new VersionManager.Build(this)
                 .setConfigManager(mConfigManager)
@@ -63,8 +64,8 @@ public class MainActivity extends Activity {
                 .build();
 
         StringBuilder builder = new StringBuilder();
-        builder.append("配置入口: 钉钉->我的->设置->钉钉助手");
-        builder.append("\n注: 只有Xposed功能生效,才会在设置中显示钉钉助手");
+        builder.append("配置入口: 飞书/lark->头像->设置");
+        builder.append("\n注: 只有Xposed功能生效,才会在设置中显示助手");
         builder.append("\n\n适配的版本: \n");
         builder.append(mVersionManager.getSupportVersion());
 
@@ -119,13 +120,21 @@ public class MainActivity extends Activity {
         }
     }
 
-    private String getDingVersionName() {
+    private String getDingVersionName(String packageName) {
 
         // 获取版本名
         PackageUtil.SimplePackageInfo info = PackageUtil
-                .getSimplePackageInfo(this, Constant.Rimet.PACKAGE_NAME);
+                .getSimplePackageInfo(this, packageName);
 
         return info == null ? "Unknown" : "v" + info.getVersionName();
+    }
+    private String getDingVersionNames(List<String> packageNames) {
+        StringBuilder builder = new StringBuilder();
+        for (String packageName:packageNames) {
+            builder.append(getDingVersionName(packageName));
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 
     private final XConfigManager mConfigManager = new XConfigManager() {

@@ -44,7 +44,7 @@ public class Main implements IXposedHookLoadPackage, MethodHook.ThrowableCallbac
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpParam) throws Throwable {
 
-        if (!Constant.Rimet.PACKAGE_NAME.equals(lpParam.packageName)) return;
+        if (!Constant.Rimet.PACKAGE_NAMES.contains(lpParam.packageName)) return;
         Log.d("LarkHelper","found com.ss.android.lark");
         // 设置默认的参数
         XposedPlus.setDefaultInstance(new XposedPlus.Builder(lpParam)
