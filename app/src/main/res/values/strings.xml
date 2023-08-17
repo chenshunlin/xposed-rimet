@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">钉钉助手</string>
+    <string name="app_name" translatable="false">Lark Helper</string>
+    <string name="dialog_notice_not_support">不支持当前版本! 点击去适配</string>
+    <string name="menu_love_and_charity">爱心公益</string>
+    <string name="menu_helper">助手</string>
+    <string name="menu_about">关于</string>
+    <string name="menu_support">适配</string>
+    <string name="name_target_app_version">目标应用版本</string>
+    <string name="name_plugin_version">插件版本</string>
+    <string name="name_source_code">源码地址</string>
+    <string name="name_download_url">下载地址</string>
+    <string name="name_docs">说明文档</string>
+    <string name="name_love_and_charity">爱心公益</string>
+    <string name="name_about">关于</string>
 </resources>

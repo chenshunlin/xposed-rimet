@@ -17,13 +17,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 33
     defaultConfig {
-        applicationId "com.sky.xposed.rimet"
+        applicationId "tk.anysoft.lark"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 33
         versionCode 30
-        versionName "1.4.4.3"
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "armeabi-v7a"//, "arm64-v8a", "x86","arm64-v8a","x86_64"
@@ -105,6 +105,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.jakewharton:disklrucache:2.0.2'
+    androidTestImplementation 'junit:junit:4.12'
     compileOnly 'de.robv.android.xposed:api:82'
     compileOnly 'com.rover12421.AndroidHideApi:android:1.17'
     demoImplementation 'org.apache.commons:commons-lang3:3.7'
